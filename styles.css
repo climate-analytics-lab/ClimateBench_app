@@ -1,0 +1,26 @@
+body { margin: 0; font-family: sans-serif; line-height: 1.5; }
+header { background: #90D5FF; color: #fff; padding: 1em; }
+nav { display: flex; gap: 1em; }
+nav a { color: #fff; text-decoration: none; }
+main { padding: 2em; }
+footer { background: #f2f2f2; text-align: center; padding: 1em; }
+.chart { width: 100%; max-width: 800px; height: 400px; margin: 0 auto; }
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+#score-table {
+  table-layout: fixed;
+  width: 100%;
+}
+#score-table th,
+#score-table td {
+  text-align: center;
+  vertical-align: middle;
+  width: auto; /* Let table-layout: fixed handle equal width */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

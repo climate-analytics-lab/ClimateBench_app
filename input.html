@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Input Data</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    .slider-container {
+      margin-top: 1em;
+      text-align: center;
+    }
+    #timeSlider {
+      width: 80%;
+    }
+    #sliderLabel {
+      font-weight: bold;
+      display: block;
+      margin-top: 0.5em;
+    }
+    #year-ticks {
+      width: 80%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8em;
+      color: #666;
+    }
+    #year-ticks span {
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ClimateBench 2.0</h1>
+    <nav>
+      <a href="overview.html">Overview</a>
+      <a href="scores.html">Scores</a>
+      <a href="input.html">Input Data</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>Zonal Mean Time Series</h2>
+
+    <div>
+      <label for="variable-select">Variable:</label>
+      <select id="variable-select">
+        <option value="tas" selected>Surface Air Temperature</option>
+        <option value="pr">Precipitation</option>
+        <option value="tos">Sea Surface Temperature</option>
+        <option value="clt">Cloud Area Fraction</option>
+        <option value="od550aer">Aerosol Optical Depth at 550 nm</option>
+      </select>
+
+      <label for="region-select">Region:</label>
+      <select id="region-select">
+        <option value="global" selected>Global</option>
+        <option value="northern_hemisphere">Northern Hemisphere</option>
+        <option value="southern_hemisphere">Southern Hemisphere</option>
+        <option value="tropics">Tropics</option>
+      </select>
+
+      <label for="model-select">Model:</label>
+      <select id="model-select">
+        <!-- <option value="FGOALS-g3">FGOALS-g3</option> -->
+        <option value="CanESM5">CanESM5</option>
+        <!-- <option value="ACCESS-CM2">ACCESS-CM2</option> -->
+        <option value="MPI-ESM1-2-LR">MPI-ESM1-2-HR</option>
+        <!-- <option value="EC-Earth3">EC-Earth3</option> -->
+      </select>
+
+      <label>Time Resolution:</label>
+      <label><input type="radio" name="resolution" value="monthly" checked> Monthly</label>
+      <label><input type="radio" name="resolution" value="annual"> Annual</label>
+    </div>
+
+    <div id="timeseries-chart" style="width:100%; max-width:1000px; height:500px; margin:2em auto;"></div>
+
+    <h2 id="map-title">Model Map Image</h2>
+
+    <div id="map-image-container" style="display: flex; justify-content: center; gap: 2em; align-items: start; flex-wrap: wrap;">
+      <div>
+        <p><strong>Model Data</strong> <strong>Model Error</strong> </p>
+        <!-- <p><strong>Model Error</strong></p> -->
+        <img id="map-image" src="" alt="Model Map" style="max-width: 45%; height: auto;" />
+        <img id="error-image" src="" alt="Model Error Map" style="max-width: 45%; height: auto;" />
+      </div>
+    </div>
+
+    <div class="slider-container">
+      <input type="range" id="timeSlider" min="0" max="239" value="0" />
+      <div id="year-ticks"></div>
+    </div>
+
+  </main>
+
+  <footer><p>&copy; 2025 CAL.</p></footer>
+
+  <script>
+    const startDate = new Date('2005-01-01');
+    const monthCount = 240;
+    const slider = document.getElementById('timeSlider');
+
+    function getDateFromSlider(val) {
+      const resolution = document.querySelector('input[name="resolution"]:checked').value;
+      const d = new Date(startDate);
+      if (resolution === 'monthly') {
+        d.setMonth(d.getMonth() + parseInt(val));
+        return d.toISOString().slice(0, 7); // "YYYY-MM"
+      } else {
+        d.setFullYear(d.getFullYear() + parseInt(val));
+        return d.getFullYear().toString(); // "YYYY"
+      }
+    }
+
+    function updateSliderResolution(resolution) {
+      const max = resolution === 'monthly' ? 240 - 1 : 20 - 1;
+      slider.max = max;
+      slider.value = 0;
+      generateSliderTicks(resolution);
+    }
+
+    function updateMapImage() {
+      const model = document.getElementById('model-select').value;
+      const variable = document.getElementById('variable-select').value;
+      const resolution = document.querySelector('input[name="resolution"]:checked').value;
+      const rawDate = getDateFromSlider(slider.value); // could be "YYYY" or "YYYY-MM"
+
+      const date = resolution === 'monthly'
+        ? `${rawDate}-01`
+        : `${rawDate}-01-01`;
+
+      const basePath = `data/images/${model}/${resolution}/${variable}`;
+      const modelPath = `${basePath}/data/${date}.png`;
+      const errorPath = `${basePath}/error/${date}.png`;
+
+      const modelImg = document.getElementById('map-image');
+      const errorImg = document.getElementById('error-image');
+
+      modelImg.src = modelPath;
+      modelImg.alt = `Model data for ${model} on ${date}`;
+
+      errorImg.src = errorPath;
+      errorImg.alt = `Model error for ${model} on ${date}`;
+
+      document.getElementById('map-title').textContent = `Model Map Image – ${date}`;
+    }
+
+    function generateSliderTicks(resolution = 'monthly') {
+      const tickContainer = document.getElementById('year-ticks');
+      tickContainer.innerHTML = '';
+
+      const startYear = 2005;
+      const endYear = 2025;
+      const step = 5;
+
+      const count = resolution === 'monthly' ? 240 : 20;
+
+      for (let y = startYear; y <= endYear; y += step) {
+        const span = document.createElement('span');
+        span.textContent = y;
+
+        const index = resolution === 'monthly' ? (y - startYear) * 12 : (y - startYear);
+        span.style.left = `${(index / (count - 1)) * 100}%`;
+        tickContainer.appendChild(span);
+      }
+    }
+
+    function renderChart(variable, model, region) {
+      const modelFiltered = modelData.filter(row =>
+        row.model === model &&
+        row.region === region &&
+        !isNaN(parseFloat(row[variable]))
+      );
+
+      const obsFiltered = obsData.filter(row =>
+        row.region === region &&
+        !isNaN(parseFloat(row[variable]))
+      );
+
+      const traceModel = {
+        x: modelFiltered.map(row => row.time),
+        y: modelFiltered.map(row => parseFloat(row[variable])),
+        mode: 'lines',
+        name: `${model} (model)`,
+        line: { color: '#1f77b4' }
+      };
+
+      const traceObs = {
+        x: obsFiltered.map(row => row.time),
+        y: obsFiltered.map(row => parseFloat(row[variable])),
+        mode: 'lines',
+        name: 'Observations',
+        line: { color: '#ff7f0e' },
+        fill: 'none'
+      };
+
+      const traces = [traceModel, traceObs];
+
+      const errorCol = `${variable}_error`;
+      if (obsFiltered[0] && errorCol in obsFiltered[0]) {
+        const x = [], yUpper = [], yLower = [];
+
+        obsFiltered.forEach(row => {
+          const val = parseFloat(row[variable]);
+          const err = parseFloat(row[errorCol]);
+          if (!isNaN(val) && !isNaN(err)) {
+            x.push(row.time);
+            yUpper.push(val + err);
+            yLower.push(val - err);
+          }
+        });
+
+        if (x.length > 0) {
+          traces.push({
+            x: x.concat([...x].reverse()),
+            y: yUpper.concat([...yLower].reverse()),
+            fill: 'toself',
+            fillcolor: 'rgba(255,127,14,0.2)',
+            line: { color: 'transparent' },
+            name: 'Observation Error',
+            type: 'scatter',
+            showlegend: false
+          });
+        }
+      }
+
+      const layout = {
+        title: `${variable.toUpperCase()} Over Time`,
+        xaxis: { title: 'Year', type: 'date' },
+        yaxis: { title: variable.toUpperCase() },
+        margin: { t: 40 }
+      };
+
+      Plotly.newPlot('timeseries-chart', traces, layout, { responsive: true });
+    }
+
+    function applyFilters() {
+      const variable = document.getElementById('variable-select').value;
+      const model = document.getElementById('model-select').value;
+      const region = document.getElementById('region-select').value;
+      renderChart(variable, model, region);
+    }
+
+    function loadData(resolution) {
+      const modelFile = `data/model_zonal_mean_${resolution}.csv`;
+      const obsFile = `data/observation_zonal_mean_${resolution}.csv`;
+
+      Promise.all([
+        fetch(modelFile).then(res => res.text()),
+        fetch(obsFile).then(res => res.text())
+      ])
+      .then(([modelCSV, obsCSV]) => {
+        const modelParsed = Papa.parse(modelCSV, { header: true, dynamicTyping: true, skipEmptyLines: true });
+        const obsParsed = Papa.parse(obsCSV, { header: true, dynamicTyping: true, skipEmptyLines: true });
+
+        modelData = modelParsed.data.filter(row => row.time && row.model && row.region);
+        obsData = obsParsed.data.filter(row => row.time && row.region);
+        applyFilters();
+      })
+      .catch(err => {
+        console.error("CSV load error:", err);
+        document.getElementById('timeseries-chart').innerHTML = "<p>Error loading chart data.</p>";
+      });
+    }
+
+    let modelData = [], obsData = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData('monthly');
+
+      document.getElementById('variable-select').addEventListener('change', applyFilters);
+      document.getElementById('region-select').addEventListener('change', applyFilters);
+      document.getElementById('model-select').addEventListener('change', applyFilters);
+
+      document.querySelectorAll('input[name="resolution"]').forEach(input => {
+        input.addEventListener('change', () => {
+          const resolution = document.querySelector('input[name="resolution"]:checked').value;
+          updateSliderResolution(resolution);
+          loadData(resolution);
+          updateMapImage();
+        });
+      });
+
+      document.getElementById('model-select').addEventListener('change', updateMapImage);
+      document.getElementById('variable-select').addEventListener('change', updateMapImage);
+      document.querySelectorAll('input[name="resolution"]').forEach(input => {
+        input.addEventListener('change', updateMapImage);
+      });
+
+      slider.addEventListener('input', updateMapImage);
+
+      const resolution = document.querySelector('input[name="resolution"]:checked').value;
+      updateSliderResolution(resolution);
+      updateMapImage();
+    });
+  </script>
+</body>
+</html>
