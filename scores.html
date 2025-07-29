@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scores</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>ClimateBench 2.0</h1>
+    <nav>
+      <a href="overview.html">Overview</a>
+      <a href="scores.html">Scores</a>
+      <a href="input.html">Input Data</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Benchmark Scores</h2>
+
+    <div>
+      <label for="filter-variable">Variable:</label>
+      <select id="filter-variable">
+        <option value="tas" selected>Surface Air Temperature</option>
+        <option value="pr">Precipitation</option>
+        <option value="tos">Sea Surface Temperature</option>
+        <option value="clt">Cloud Area Fraction</option>
+        <option value="od550aer">Aerosol Optical Depth at 550 nm</option>
+      </select>
+
+      <label for="filter-region">Region:</label>
+      <select id="filter-region">
+        <option value="global" selected>Global</option>
+        <option value="northern_hemisphere">Northern Hemisphere</option>
+        <option value="southern_hemisphere">Southern Hemisphere</option>
+        <option value="tropics">Tropics</option>
+      </select>
+
+      <label for="filter-metric">Metric:</label>
+      <select id="filter-metric">
+        <option value="zonal_mean_mae" selected>MAE</option>
+        <option value="zonal_mean_rmse">RMSE</option>
+        <option value="zonal_mean_crps">CRPS</option>
+        <option value="zonal_mean_mae_bias_adjusted">MAE (bias adjusted)</option>
+        <option value="zonal_mean_rmse_bias_adjusted">RMSE (bias adjusted)</option>
+        <option value="zonal_mean_crps_bias_adjusted">CRPS (bias adjusted)</option>
+        <option value="zonal_mean_mae_anomaly">MAE (anomaly)</option>
+        <option value="zonal_mean_rmse_anomaly">RMSE (anomaly)</option>
+        <option value="zonal_mean_crps_anomaly">CRPS (anomaly)</option>
+      </select>
+
+      <label for="sort-column">Sort By:</label>
+      <select id="sort-column">
+        <option value="">None</option>
+      </select>
+    </div>
+
+    <div style="overflow-x:auto; margin-top: 1em;">
+      <table id="score-table" border="1" cellspacing="0" cellpadding="6">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer><p>&copy; 2025 CAL.</p></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script>
+    let allRows = [];
+    let headers = [];
+
+    function renderTable(data) {
+      const table = document.getElementById('score-table');
+      const thead = table.querySelector('thead');
+      const tbody = table.querySelector('tbody');
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+
+      // Remove the "variable", "metric", and "region" columns
+      const visibleHeaders = headers.filter(h => !['variable', 'metric', 'region'].includes(h));
+
+      const headerRow = document.createElement('tr');
+      visibleHeaders.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        visibleHeaders.forEach(h => {
+          const td = document.createElement('td');
+          const val = row[h];
+          td.textContent = isFinite(val) && val !== '' ? (+val).toFixed(3) : val;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+
+      const sortDropdown = document.getElementById('sort-column');
+      if (sortDropdown && sortDropdown.options.length <= 1) {
+        visibleHeaders.forEach(h => {
+          const opt = document.createElement('option');
+          opt.value = h;
+          opt.textContent = h;
+          sortDropdown.appendChild(opt);
+        });
+      }
+    }
+
+    function applyFilters() {
+      const varVal = document.getElementById('filter-variable').value;
+      const metVal = document.getElementById('filter-metric').value;
+      const regVal = document.getElementById('filter-region').value;
+
+      const filtered = allRows.filter(row =>
+        (!varVal || row['variable'] === varVal) &&
+        (!metVal || row['metric'] === metVal) &&
+        (!regVal || row['region'] === regVal)
+      );
+
+      const sortKey = document.getElementById('sort-column').value;
+
+      if (sortKey) {
+        filtered.sort((a, b) => {
+          const va = parseFloat(a[sortKey]);
+          const vb = parseFloat(b[sortKey]);
+          if (isNaN(va) || isNaN(vb)) return 0;
+          return va - vb; // ascending
+        });
+      }
+
+      renderTable(filtered);
+    }
+
+    fetch('data/benchmark_results.csv')
+      .then(res => res.text())
+      .then(csv => {
+        const parsed = Papa.parse(csv, { header: true });
+        headers = parsed.meta.fields.slice(1); // skip unnamed index
+        allRows = parsed.data.filter(row => row.model); // basic cleanup
+
+        applyFilters(); // auto-filter on load with default dropdown values
+
+        document.getElementById('filter-variable').addEventListener('change', applyFilters);
+        document.getElementById('filter-metric').addEventListener('change', applyFilters);
+        document.getElementById('filter-region').addEventListener('change', applyFilters);
+        document.getElementById('sort-column').addEventListener('change', applyFilters);
+      })
+      .catch(err => {
+        console.error("CSV loading error:", err);
+        document.getElementById('score-table').outerHTML = "<p>Error loading benchmark results.</p>";
+      });
+  </script>
+</body>
+</html>
