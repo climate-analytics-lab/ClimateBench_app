@@ -78,16 +78,16 @@
       <label><input type="radio" name="resolution" value="annual"> Annual</label>
     </div>
 
-    <div id="timeseries-chart" style="width:100%; max-width:1000px; height:500px; margin:2em auto;"></div>
+    <div id="timeseries-chart" style="width:100%; height:500px; margin-top: 2em;"></div>
 
     <h2 id="map-title">Model Map Image</h2>
 
     <div id="map-image-container" style="display: flex; justify-content: center; gap: 2em; align-items: start; flex-wrap: wrap;">
       <div>
-        <p><strong>Model Data</strong> <strong>Model Error</strong> </p>
+        <!-- <p><strong>Model Data</strong> <strong>Model Error</strong> </p> -->
         <!-- <p><strong>Model Error</strong></p> -->
-        <img id="map-image" src="" alt="Model Map" style="max-width: 45%; height: auto;" />
-        <img id="error-image" src="" alt="Model Error Map" style="max-width: 45%; height: auto;" />
+        <img id="map-image" src="" alt="Model Map" style="width: 49%; height: auto;" />
+        <img id="error-image" src="" alt="Model Error Map" style="width: 49%; height: auto;" />
       </div>
     </div>
 
@@ -118,7 +118,9 @@
     }
 
     function updateSliderResolution(resolution) {
-      const max = resolution === 'monthly' ? 240 - 1 : 20 - 1;
+      const max = resolution === 'monthly' ? 240 - 1 : 21 - 1;
+      const min = resolution === 'monthly' ? 0 : 1;
+      slider.min = min;
       slider.max = max;
       slider.value = 0;
       generateSliderTicks(resolution);
@@ -147,7 +149,7 @@
       errorImg.src = errorPath;
       errorImg.alt = `Model error for ${model} on ${date}`;
 
-      document.getElementById('map-title').textContent = `Model Map Image – ${date}`;
+      document.getElementById('map-title').textContent = `Map Image – ${date}`;
     }
 
     function generateSliderTicks(resolution = 'monthly') {
@@ -230,9 +232,9 @@
       }
 
       const layout = {
-        title: `${variable.toUpperCase()} Over Time`,
-        xaxis: { title: 'Year', type: 'date' },
+        xaxis: { type: 'date' },
         yaxis: { title: variable.toUpperCase() },
+        legend: { orientation: 'h', x: 0, y: -0.1 },
         margin: { t: 40 }
       };
 
