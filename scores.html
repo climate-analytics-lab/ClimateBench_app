@@ -9,7 +9,7 @@
   <header>
     <h1>ClimateBench 2.0</h1>
     <nav>
-      <a href="overview.html">Overview</a>
+      <a href="index.html">Overview</a>
       <a href="scores.html">Scores</a>
       <a href="input.html">Input Data</a>
     </nav>
@@ -70,6 +70,14 @@
     let allRows = [];
     let headers = [];
 
+    const headerDisplayNames = {
+      "model": "Model Name",
+      "Historical (2005-2014)": "Historical (2005-2014)",
+      "SSP2-4.5": "SSP2-4.5",
+      "Change (hist 2005)": "Change",
+      "Percent Change (hist 2005)": "Percent Change",
+    };
+
     function renderTable(data) {
       const table = document.getElementById('score-table');
       const thead = table.querySelector('thead');
@@ -83,7 +91,7 @@
       const headerRow = document.createElement('tr');
       visibleHeaders.forEach(h => {
         const th = document.createElement('th');
-        th.textContent = h;
+        th.textContent = headerDisplayNames[h] || h;
         headerRow.appendChild(th);
       });
       thead.appendChild(headerRow);
@@ -93,7 +101,18 @@
         visibleHeaders.forEach(h => {
           const td = document.createElement('td');
           const val = row[h];
-          td.textContent = isFinite(val) && val !== '' ? (+val).toFixed(3) : val;
+          const num = Number(val);
+          const isPrecipitation = row['variable'] === 'pr';
+          if (!isNaN(num) && isFinite(num)) {
+            const isPercentChangeCol = h === "Percent Change (hist 2005)";
+            if (isPrecipitation && !isPercentChangeCol) {
+              td.textContent = num.toExponential(2); // scientific notation
+            } else {
+              td.textContent = num.toFixed(3); // normal format
+            }
+          } else {
+            td.textContent = val;
+          }
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -102,9 +121,11 @@
       const sortDropdown = document.getElementById('sort-column');
       if (sortDropdown && sortDropdown.options.length <= 1) {
         visibleHeaders.forEach(h => {
+          if (h === "model") return; // ❌ skip 'Model Name'
+
           const opt = document.createElement('option');
-          opt.value = h;
-          opt.textContent = h;
+          opt.value = h; // raw key used for sorting
+          opt.textContent = headerDisplayNames[h] || h; // user-friendly label
           sortDropdown.appendChild(opt);
         });
       }
