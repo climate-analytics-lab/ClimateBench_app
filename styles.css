@@ -1,5 +1,5 @@
 body { margin: 0; font-family: sans-serif; line-height: 1.5; }
-header { background: #90D5FF; color: #fff; padding: 1em; }
+header { background: #00629B; color: #fff; padding: 1em; }
 nav { display: flex; gap: 1em; }
 nav a { color: #fff; text-decoration: none; }
 main { padding: 2em; }
