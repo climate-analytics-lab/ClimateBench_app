@@ -184,6 +184,44 @@ footer { background: #f2f2f2; text-align: center; padding: 1em; }
   table-layout: fixed;
   width: 100%;
 }
+/* Modern Table Styles */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.table th {
+  background: #1a73e8;
+  color: white;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 2px solid #0d47a1;
+}
+
+.table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0f2f5;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+/* Legacy table styles for backward compatibility */
 #score-table th,
 #score-table td {
   text-align: center;
