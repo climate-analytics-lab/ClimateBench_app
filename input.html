@@ -56,60 +56,76 @@
     </div>
   </nav>
 
-  <main>
+  <main class="main-content">
+    <div class="input-section">
+      <h2 class="section-title">Zonal Mean Time Series</h2>
 
-    <h2>Zonal Mean Time Series</h2>
+      <div class="widget-menu">
+        <div class="widget-row">
+          <div class="widget-group">
+            <label for="variable-select">Variable</label>
+            <select id="variable-select" class="widget-select">
+              <option value="tas" selected>Surface Air Temperature</option>
+              <option value="pr">Precipitation</option>
+              <option value="tos">Sea Surface Temperature</option>
+              <option value="clt">Cloud Area Fraction</option>
+              <option value="od550aer">Aerosol Optical Depth at 550 nm</option>
+            </select>
+          </div>
 
-    <div>
-      <label for="variable-select">Variable:</label>
-      <select id="variable-select">
-        <option value="tas" selected>Surface Air Temperature</option>
-        <option value="pr">Precipitation</option>
-        <option value="tos">Sea Surface Temperature</option>
-        <option value="clt">Cloud Area Fraction</option>
-        <option value="od550aer">Aerosol Optical Depth at 550 nm</option>
-      </select>
+          <div class="widget-group">
+            <label for="region-select">Region</label>
+            <select id="region-select" class="widget-select">
+              <option value="global" selected>Global</option>
+              <option value="northern_hemisphere">Northern Hemisphere</option>
+              <option value="southern_hemisphere">Southern Hemisphere</option>
+              <option value="tropics">Tropics</option>
+            </select>
+          </div>
 
-      <label for="region-select">Region:</label>
-      <select id="region-select">
-        <option value="global" selected>Global</option>
-        <option value="northern_hemisphere">Northern Hemisphere</option>
-        <option value="southern_hemisphere">Southern Hemisphere</option>
-        <option value="tropics">Tropics</option>
-      </select>
+          <div class="widget-group">
+            <label for="model-select">Model</label>
+            <select id="model-select" class="widget-select">
+              <option value="CanESM5">CanESM5</option>
+              <option value="MPI-ESM1-2-LR">MPI-ESM1-2-HR</option>
+            </select>
+          </div>
 
-      <label for="model-select">Model:</label>
-      <select id="model-select">
-        <!-- <option value="FGOALS-g3">FGOALS-g3</option> -->
-        <option value="CanESM5">CanESM5</option>
-        <!-- <option value="ACCESS-CM2">ACCESS-CM2</option> -->
-        <option value="MPI-ESM1-2-LR">MPI-ESM1-2-HR</option>
-        <!-- <option value="EC-Earth3">EC-Earth3</option> -->
-      </select>
+          <div class="widget-group">
+            <label>Time Resolution</label>
+            <div style="display: flex; gap: 20px; align-items: center; padding: 12px 0;">
+              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="resolution" value="monthly" checked style="margin: 0;">
+                Monthly
+              </label>
+              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="resolution" value="annual" style="margin: 0;">
+                Annual
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <label>Time Resolution:</label>
-      <label><input type="radio" name="resolution" value="monthly" checked> Monthly</label>
-      <label><input type="radio" name="resolution" value="annual"> Annual</label>
-    </div>
+      <div class="chart-container">
+        <div id="timeseries-chart" style="width:100%; height:500px; margin-top: 2em;"></div>
+      </div>
 
-    <div id="timeseries-chart" style="width:100%; height:500px; margin-top: 2em;"></div>
+      <div class="chart-container">
+        <h3 class="chart-title" id="map-title">Model Map Image</h3>
+        <div id="map-image-container" style="display: flex; justify-content: center; gap: 2em; align-items: start; flex-wrap: wrap;">
+          <div>
+            <img id="map-image" src="" alt="Model Map" style="width: 49%; height: auto;" />
+            <img id="error-image" src="" alt="Model Error Map" style="width: 49%; height: auto;" />
+          </div>
+        </div>
+      </div>
 
-    <h2 id="map-title">Model Map Image</h2>
-
-    <div id="map-image-container" style="display: flex; justify-content: center; gap: 2em; align-items: start; flex-wrap: wrap;">
-      <div>
-        <!-- <p><strong>Model Data</strong> <strong>Model Error</strong> </p> -->
-        <!-- <p><strong>Model Error</strong></p> -->
-        <img id="map-image" src="" alt="Model Map" style="width: 49%; height: auto;" />
-        <img id="error-image" src="" alt="Model Error Map" style="width: 49%; height: auto;" />
+      <div class="slider-container">
+        <input type="range" id="timeSlider" min="0" max="239" value="0" />
+        <div id="year-ticks"></div>
       </div>
     </div>
-
-    <div class="slider-container">
-      <input type="range" id="timeSlider" min="0" max="239" value="0" />
-      <div id="year-ticks"></div>
-    </div>
-
   </main>
 
   <footer><p>&copy; 2025 CAL.</p></footer>
