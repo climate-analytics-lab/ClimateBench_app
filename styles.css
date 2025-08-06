@@ -386,12 +386,72 @@ table {
   border-spacing: 0;
   background-color: white;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
 }
 
 .table th {
   background: #1a73e8;
   color: white;
-  padding: 12px 16px;
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #0d47a1;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f0f2f5;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #fafbfc;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Specific styling for score table */
+#score-table {
+  table-layout: fixed;
+  width: 100%;
+  border: none;
+}
+
+#score-table th,
+#score-table td {
+  text-align: center;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 16px 12px;
+}
+
+#score-table th {
+  background: #1a73e8;
+  color: white;
   font-weight: 600;
   font-size: 13px;
   text-transform: uppercase;
@@ -399,32 +459,24 @@ table {
   border-bottom: 2px solid #0d47a1;
 }
 
-.table td {
-  padding: 10px 16px;
+#score-table td {
   border-bottom: 1px solid #f0f2f5;
   font-size: 14px;
   transition: background-color 0.2s ease;
 }
 
-.table tbody tr:hover {
+#score-table tbody tr:hover {
   background-color: #f8fafc;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.table tbody tr:nth-child(even) {
+#score-table tbody tr:nth-child(even) {
   background-color: #fafbfc;
 }
 
-/* Legacy table styles for backward compatibility */
-#score-table th,
-#score-table td {
-  text-align: center;
-  vertical-align: middle;
-  width: auto; /* Let table-layout: fixed handle equal width */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+#score-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* Scores Page Styles */
