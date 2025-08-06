@@ -30,57 +30,87 @@
     </div>
   </nav>
 
-  <main>
-    <h2>Benchmark Scores</h2>
+  <main class="main-content">
+    <div class="probabilistic-scores">
+      <h2 class="section-title">Benchmark Scores</h2>
+      
+      <div class="widget-menu">
+        <div class="widget-row">
+          <div class="widget-group">
+            <label for="filter-variable">Variable</label>
+            <select id="filter-variable" class="widget-select">
+              <option value="tas" selected>Surface Air Temperature</option>
+              <option value="pr">Precipitation</option>
+              <option value="tos">Sea Surface Temperature</option>
+              <option value="clt">Cloud Area Fraction</option>
+              <option value="od550aer">Aerosol Optical Depth at 550 nm</option>
+            </select>
+          </div>
 
-    <div>
-      <label for="filter-variable">Variable:</label>
-      <select id="filter-variable">
-        <option value="tas" selected>Surface Air Temperature</option>
-        <option value="pr">Precipitation</option>
-        <option value="tos">Sea Surface Temperature</option>
-        <option value="clt">Cloud Area Fraction</option>
-        <option value="od550aer">Aerosol Optical Depth at 550 nm</option>
-      </select>
+          <div class="widget-group">
+            <label for="filter-region">Region</label>
+            <select id="filter-region" class="widget-select">
+              <option value="global" selected>Global</option>
+              <option value="northern_hemisphere">Northern Hemisphere</option>
+              <option value="southern_hemisphere">Southern Hemisphere</option>
+              <option value="tropics">Tropics</option>
+            </select>
+          </div>
 
-      <label for="filter-region">Region:</label>
-      <select id="filter-region">
-        <option value="global" selected>Global</option>
-        <option value="northern_hemisphere">Northern Hemisphere</option>
-        <option value="southern_hemisphere">Southern Hemisphere</option>
-        <option value="tropics">Tropics</option>
-      </select>
+          <div class="widget-group">
+            <label for="filter-metric">Metric</label>
+            <select id="filter-metric" class="widget-select">
+              <option value="zonal_mean_mae" selected>MAE</option>
+              <option value="zonal_mean_rmse">RMSE</option>
+              <option value="zonal_mean_crps">CRPS</option>
+              <option value="zonal_mean_mae_bias_adjusted">MAE (bias adjusted)</option>
+              <option value="zonal_mean_rmse_bias_adjusted">RMSE (bias adjusted)</option>
+              <option value="zonal_mean_crps_bias_adjusted">CRPS (bias adjusted)</option>
+              <option value="zonal_mean_mae_anomaly">MAE (anomaly)</option>
+              <option value="zonal_mean_rmse_anomaly">RMSE (anomaly)</option>
+              <option value="zonal_mean_crps_anomaly">CRPS (anomaly)</option>
+            </select>
+          </div>
 
-      <label for="filter-metric">Metric:</label>
-      <select id="filter-metric">
-        <option value="zonal_mean_mae" selected>MAE</option>
-        <option value="zonal_mean_rmse">RMSE</option>
-        <option value="zonal_mean_crps">CRPS</option>
-        <option value="zonal_mean_mae_bias_adjusted">MAE (bias adjusted)</option>
-        <option value="zonal_mean_rmse_bias_adjusted">RMSE (bias adjusted)</option>
-        <option value="zonal_mean_crps_bias_adjusted">CRPS (bias adjusted)</option>
-        <option value="zonal_mean_mae_anomaly">MAE (anomaly)</option>
-        <option value="zonal_mean_rmse_anomaly">RMSE (anomaly)</option>
-        <option value="zonal_mean_crps_anomaly">CRPS (anomaly)</option>
-      </select>
+          <div class="widget-group">
+            <label for="sort-column">Sort By</label>
+            <select id="sort-column" class="widget-select">
+              <option value="">None</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-      <label for="sort-column">Sort By:</label>
-      <select id="sort-column">
-        <option value="">None</option>
-      </select>
+      <div class="chart-container">
+        <div style="overflow-x:auto; width: 100%;">
+          <table id="score-table" class="table" border="1" cellspacing="0" cellpadding="6">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <h3 class="chart-title">Time Series Analysis</h3>
+        <div class="widget-row">
+          <div class="widget-group">
+            <label>Time Resolution</label>
+            <div style="display: flex; gap: 20px; align-items: center; padding: 12px 0;">
+              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="ts-resolution" value="monthly" checked style="margin: 0;">
+                Monthly
+              </label>
+              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="ts-resolution" value="annual" style="margin: 0;">
+                Annual
+              </label>
+            </div>
+          </div>
+        </div>
+        <div id="time-series-plot" style="width:100%; height:500px; margin-top: 2em;"></div>
+      </div>
     </div>
-
-    <div style="overflow-x:auto; margin-top: 1em;">
-      <table id="score-table" class="table" border="1" cellspacing="0" cellpadding="6">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <h2> </h2>
-    <label>Time Resolution:</label>
-    <label><input type="radio" name="ts-resolution" value="monthly" checked> Monthly</label>
-    <label><input type="radio" name="ts-resolution" value="annual"> Annual</label>
-    <div id="time-series-plot" style="width:100%; height:500px; margin-top: 2em;"></div>
+  </main>
   </main>
 
   <footer><p>&copy; 2025 CAL.</p></footer>
