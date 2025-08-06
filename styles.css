@@ -1,4 +1,171 @@
-body { margin: 0; font-family: sans-serif; line-height: 1.5; }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Reset and box sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base body style */
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #fff;
+}
+
+html, body {
+  min-height: 100vh;
+  height: auto;
+  width: 100vw;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.App {
+  min-height: 100vh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content {
+  padding: 40px 0;
+  min-height: 100vh;
+  height: auto;
+  flex: 1;
+  overflow: visible;
+}
+
+.map-page {
+  padding: 0 !important;
+}
+
+/* Section styles */
+.section {
+  margin-bottom: 50px;
+}
+
+.section h2 {
+  color: #1a73e8;
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e8f0fe;
+  padding-bottom: 10px;
+}
+
+.section p {
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+.section a {
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.section a:hover {
+  text-decoration: underline;
+}
+
+/* Loading and error states */
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-size: 1.1em;
+}
+
+.error {
+  text-align: center;
+  padding: 20px;
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+
+/* Reset some default styles */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 1rem 0;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+select, input, textarea {
+  font-family: inherit;
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 1rem; }
+.p-4 { padding: 1.5rem; }
+.p-5 { padding: 3rem; }
 
 /* Header Component Styles */
 .header {
@@ -171,19 +338,47 @@ body { margin: 0; font-family: sans-serif; line-height: 1.5; }
     font-size: 0.8rem;
   }
 }
-main { padding: 2em; }
-footer { background: #f2f2f2; text-align: center; padding: 1em; }
-.chart { width: 100%; max-width: 800px; height: 400px; margin: 0 auto; }
-.center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
+
+/* Modern Dropdown Styles */
+select {
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 14px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 44px;
+  font-weight: 400;
+  font-family: Arial, sans-serif;
+  margin: 0 8px 8px 0;
 }
-#score-table {
-  table-layout: fixed;
-  width: 100%;
+
+select:hover {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.08);
 }
+
+select:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+/* Style for labels that come before select elements */
+label {
+  font-weight: 500;
+  color: #374151;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
 /* Modern Table Styles */
 table {
   width: 100%;
@@ -232,42 +427,13 @@ table {
   white-space: nowrap;
 }
 
-/* Modern Dropdown Styles */
-select {
-  padding: 12px 16px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  background-color: white;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 14px center;
-  background-repeat: no-repeat;
-  background-size: 16px;
-  padding-right: 44px;
-  font-weight: 400;
-  font-family: Arial, sans-serif;
-  margin: 0 8px 8px 0;
-}
-
-select:hover {
-  border-color: #1a73e8;
-  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.08);
-}
-
-select:focus {
-  outline: none;
-  border-color: #1a73e8;
-  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
-}
-
-/* Style for labels that come before select elements */
-label {
-  font-weight: 500;
-  color: #374151;
-  margin-right: 8px;
-  font-size: 14px;
+/* Additional styles for existing elements */
+main { padding: 2em; }
+footer { background: #f2f2f2; text-align: center; padding: 1em; }
+.chart { width: 100%; max-width: 800px; height: 400px; margin: 0 auto; }
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
 }
