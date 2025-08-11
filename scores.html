@@ -120,6 +120,8 @@
     let allRows = [];
     let headers = [];
     let tsMonthly = [], tsAnnual = [];
+    let benchmarkData = [];
+    let crpsData = [];
 
     const headerDisplayNames = {
       "model": "Model Name",
@@ -128,6 +130,15 @@
       "Change (hist 2005)": "Change",
       "Percent Change (hist 2005)": "Percent Change",
     };
+
+    function isCRPSMetric(metric) {
+      return metric && metric.includes('crps');
+    }
+
+    function getCurrentData() {
+      const metVal = document.getElementById('filter-metric').value;
+      return isCRPSMetric(metVal) ? crpsData : benchmarkData;
+    }
 
     function renderTable(data) {
       const table = document.getElementById('score-table');
@@ -187,7 +198,8 @@
       const metVal = document.getElementById('filter-metric').value;
       const regVal = document.getElementById('filter-region').value;
 
-      const filtered = allRows.filter(row =>
+      const currentData = getCurrentData();
+      const filtered = currentData.filter(row =>
         (!varVal || row['variable'] === varVal) &&
         (!metVal || row['metric'] === metVal) &&
         (!regVal || row['region'] === regVal)
@@ -207,39 +219,55 @@
       renderTable(filtered);
     }
 
-    fetch('data/benchmark_results.csv')
-      .then(res => res.text())
-      .then(csv => {
-        const parsed = Papa.parse(csv, { header: true });
-        headers = parsed.meta.fields.slice(1); // skip unnamed index
-        allRows = parsed.data.filter(row => row.model); // basic cleanup
+    // Load both benchmark and CRPS data
+    Promise.all([
+      fetch('data/benchmark_results.csv').then(res => res.text()),
+      fetch('data/crps_benchmark_results.csv').then(res => res.text())
+    ])
+    .then(([benchmarkCSV, crpsCSV]) => {
+      const benchmarkParsed = Papa.parse(benchmarkCSV, { header: true });
+      const crpsParsed = Papa.parse(crpsCSV, { header: true });
+      
+      benchmarkData = benchmarkParsed.data.filter(row => row.model);
+      crpsData = crpsParsed.data.filter(row => row.model);
+      
+      // Set headers from benchmark data initially
+      headers = benchmarkParsed.meta.fields.slice(1); // skip unnamed index
+      allRows = benchmarkData; // default to benchmark data
 
-        applyFilters(); // auto-filter on load with default dropdown values
+      applyFilters(); // auto-filter on load with default dropdown values
 
-        document.getElementById('filter-variable').addEventListener('change', applyFilters);
-        document.getElementById('filter-metric').addEventListener('change', applyFilters);
-        document.getElementById('filter-region').addEventListener('change', applyFilters);
-        document.getElementById('sort-column').addEventListener('change', applyFilters);
-      })
-      .catch(err => {
-        console.error("CSV loading error:", err);
-        document.getElementById('score-table').outerHTML = "<p>Error loading benchmark results.</p>";
-      });
+      document.getElementById('filter-variable').addEventListener('change', applyFilters);
+      document.getElementById('filter-metric').addEventListener('change', applyFilters);
+      document.getElementById('filter-region').addEventListener('change', applyFilters);
+      document.getElementById('sort-column').addEventListener('change', applyFilters);
+    })
+    .catch(err => {
+      console.error("CSV loading error:", err);
+      document.getElementById('score-table').outerHTML = "<p>Error loading benchmark results.</p>";
+    });
 
-    // After existing fetch for benchmark_results.csv...
-    fetch('data/benchmark_results_time_series.csv')
-      .then(res => res.text())
-      .then(csv => {
-        tsMonthly = Papa.parse(csv, { header: true, dynamicTyping: true }).data;
-        setupTimeSeries();
-      });
-
-    fetch('data/benchmark_results_time_series_annual.csv')
-      .then(res => res.text())
-      .then(csv => {
-        tsAnnual = Papa.parse(csv, { header: true, dynamicTyping: true }).data;
-        setupTimeSeries();
-      });
+    // Load time series data
+    Promise.all([
+      fetch('data/benchmark_results_time_series.csv').then(res => res.text()),
+      fetch('data/benchmark_results_time_series_annual.csv').then(res => res.text()),
+      fetch('data/crps_benchmark_timeseries.csv').then(res => res.text())
+    ])
+    .then(([tsMonthlyCSV, tsAnnualCSV, crpsTSMonthlyCSV]) => {
+      tsMonthly = Papa.parse(tsMonthlyCSV, { header: true, dynamicTyping: true }).data;
+      tsAnnual = Papa.parse(tsAnnualCSV, { header: true, dynamicTyping: true }).data;
+      
+      // Parse CRPS time series data (monthly only)
+      const crpsTSMonthly = Papa.parse(crpsTSMonthlyCSV, { header: true, dynamicTyping: true }).data;
+      
+      // Combine regular and CRPS time series data for monthly
+      tsMonthly = [...tsMonthly, ...crpsTSMonthly];
+      
+      setupTimeSeries();
+    })
+    .catch(err => {
+      console.error("Time series CSV loading error:", err);
+    });
 
     function setupTimeSeries() {
       const plotDiv = document.getElementById('time-series-plot');
@@ -254,18 +282,36 @@
           ? "RMSE"
           : metVal === "zonal_mean_mae"
             ? "MAE"
-            : NaN;
+            : metVal === "zonal_mean_crps"
+              ? "CRPS"
+              : metVal === "zonal_mean_crps_bias_adjusted"
+                ? "CRPS (bias adjusted)"
+                : metVal === "zonal_mean_crps_anomaly"
+                  ? "CRPS (anomaly)"
+                  : NaN;
+
+        // For CRPS metrics, only monthly data is available
+        const isCRPS = isCRPSMetric(metVal);
+        if (isCRPS && resolution === "annual") {
+          plotDiv.innerHTML = "<p>Annual CRPS time series data is not available. Please select monthly resolution for CRPS metrics.</p>";
+          return;
+        }
 
         const tsData = resolution === "monthly" ? tsMonthly : tsAnnual;
         const timeKey = resolution === "monthly" ? "time" : "year";
+        
+        // Handle different column names for CRPS vs regular metrics
+        const modelKey = isCRPS ? "model_name" : "model";
+        const variableKey = isCRPS ? "variable_name" : "variable";
+        
         const filtered = tsData.filter(d =>
-          d.variable === varVal &&
+          d[variableKey] === varVal &&
           d.metric === metValChart
         );
 
         const traces = {};
         filtered.forEach(d => {
-          const m = d.model;
+          const m = d[modelKey];
           const yVal = parseFloat(d[regVal]);
           if (!isFinite(yVal)) return;
 
