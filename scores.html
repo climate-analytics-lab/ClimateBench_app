@@ -229,7 +229,16 @@
       const crpsParsed = Papa.parse(crpsCSV, { header: true });
       
       benchmarkData = benchmarkParsed.data.filter(row => row.model);
-      crpsData = crpsParsed.data.filter(row => row.model);
+      
+      // Remove duplicates from CRPS data based on model, variable, metric, and region
+      const crpsDataMap = new Map();
+      crpsParsed.data.filter(row => row.model).forEach(row => {
+        const key = `${row.model}-${row.variable}-${row.metric}-${row.region}`;
+        if (!crpsDataMap.has(key)) {
+          crpsDataMap.set(key, row);
+        }
+      });
+      crpsData = Array.from(crpsDataMap.values());
       
       // Set headers from benchmark data initially
       headers = benchmarkParsed.meta.fields.slice(1); // skip unnamed index
@@ -260,8 +269,18 @@
       // Parse CRPS time series data (monthly only)
       const crpsTSMonthly = Papa.parse(crpsTSMonthlyCSV, { header: true, dynamicTyping: true }).data;
       
+      // Remove duplicates from CRPS time series data
+      const crpsTSMap = new Map();
+      crpsTSMonthly.forEach(row => {
+        const key = `${row.model_name}-${row.variable_name}-${row.time}-${row.metric}`;
+        if (!crpsTSMap.has(key)) {
+          crpsTSMap.set(key, row);
+        }
+      });
+      const deduplicatedCRPSTS = Array.from(crpsTSMap.values());
+      
       // Combine regular and CRPS time series data for monthly
-      tsMonthly = [...tsMonthly, ...crpsTSMonthly];
+      tsMonthly = [...tsMonthly, ...deduplicatedCRPSTS];
       
       setupTimeSeries();
     })
