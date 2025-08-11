@@ -260,27 +260,44 @@
     Promise.all([
       fetch('data/benchmark_results_time_series.csv').then(res => res.text()),
       fetch('data/benchmark_results_time_series_annual.csv').then(res => res.text()),
-      fetch('data/crps_benchmark_timeseries.csv').then(res => res.text())
+      fetch('data/crps_benchmark_timeseries.csv').then(res => res.text()),
+      fetch('data/crps_benchmark_timeseries_annual.csv').then(res => res.text())
     ])
-    .then(([tsMonthlyCSV, tsAnnualCSV, crpsTSMonthlyCSV]) => {
+    .then(([tsMonthlyCSV, tsAnnualCSV, crpsTSMonthlyCSV, crpsTSAnnualCSV]) => {
       tsMonthly = Papa.parse(tsMonthlyCSV, { header: true, dynamicTyping: true }).data;
       tsAnnual = Papa.parse(tsAnnualCSV, { header: true, dynamicTyping: true }).data;
       
-      // Parse CRPS time series data (monthly only)
+      // Parse CRPS time series data (monthly)
       const crpsTSMonthly = Papa.parse(crpsTSMonthlyCSV, { header: true, dynamicTyping: true }).data;
       
+      // Parse CRPS time series data (annual)
+      const crpsTSAnnual = Papa.parse(crpsTSAnnualCSV, { header: true, dynamicTyping: true }).data;
+      
       // Remove duplicates from CRPS time series data
-      const crpsTSMap = new Map();
+      const crpsTSMonthlyMap = new Map();
       crpsTSMonthly.forEach(row => {
         const key = `${row.model_name}-${row.variable_name}-${row.time}-${row.metric}`;
-        if (!crpsTSMap.has(key)) {
-          crpsTSMap.set(key, row);
+        if (!crpsTSMonthlyMap.has(key)) {
+          crpsTSMonthlyMap.set(key, row);
         }
       });
-      const deduplicatedCRPSTS = Array.from(crpsTSMap.values());
+      const deduplicatedCRPSTSMonthly = Array.from(crpsTSMonthlyMap.values());
+      
+      // Remove duplicates from CRPS annual time series data
+      const crpsTSAnnualMap = new Map();
+      crpsTSAnnual.forEach(row => {
+        const key = `${row.model_name}-${row.variable_name}-${row.year}-${row.metric}`;
+        if (!crpsTSAnnualMap.has(key)) {
+          crpsTSAnnualMap.set(key, row);
+        }
+      });
+      const deduplicatedCRPSTSAnnual = Array.from(crpsTSAnnualMap.values());
       
       // Combine regular and CRPS time series data for monthly
-      tsMonthly = [...tsMonthly, ...deduplicatedCRPSTS];
+      tsMonthly = [...tsMonthly, ...deduplicatedCRPSTSMonthly];
+      
+      // Combine regular and CRPS time series data for annual
+      tsAnnual = [...tsAnnual, ...deduplicatedCRPSTSAnnual];
       
       setupTimeSeries();
     })
@@ -309,12 +326,8 @@
                   ? "CRPS (anomaly)"
                   : NaN;
 
-        // For CRPS metrics, only monthly data is available
+        // Check if CRPS metric is selected
         const isCRPS = isCRPSMetric(metVal);
-        if (isCRPS && resolution === "annual") {
-          plotDiv.innerHTML = "<p>Annual CRPS time series data is not available. Please select monthly resolution for CRPS metrics.</p>";
-          return;
-        }
 
         const tsData = resolution === "monthly" ? tsMonthly : tsAnnual;
         const timeKey = resolution === "monthly" ? "time" : "year";
