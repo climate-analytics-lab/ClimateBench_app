@@ -592,6 +592,36 @@ table {
     text-decoration: underline;
 }
 
+/* Paleoclimate Section Styles */
+.paleo-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.paleo-section .section-title {
+    color: #1a73e8;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e8f0fe;
+    padding-bottom: 10px;
+}
+
+.paleo-section p {
+    margin-bottom: 15px;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.paleo-section a {
+    color: #1a73e8;
+    text-decoration: none;
+}
+
+.paleo-section a:hover {
+    text-decoration: underline;
+}
+
 /* Input Section Styles */
 .input-section {
     width: 100%;
@@ -763,4 +793,9 @@ footer { background: #f2f2f2; text-align: center; padding: 1em; }
   margin-left: auto;
   margin-right: auto;
   width: 50%;
+}
+
+#mae-heatmap {
+    margin: 0 auto;
+    width: 75%;
 }

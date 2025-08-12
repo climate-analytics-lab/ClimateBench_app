@@ -1,0 +1,6 @@
+,Time Period,min temperature [degreesC],mean temperature [degreesC],max temperature [degreesC],error [degreesC],Time Period idx
+4,EECO,10.0,14.0,18.0,4.0,0
+3,MPWP,2.5,3.25,4.0,0.75,1
+0,lig127k,-0.23385762680565314,1.021866349731268,2.2775903262681894,1.2557239765369212,2
+2,LGM,-7.0,-6.0,-5.0,1.0,3
+0,midHolocene,0.4145692859121399,0.43914525171041313,0.4637212175086864,0.024575965798273258,4
