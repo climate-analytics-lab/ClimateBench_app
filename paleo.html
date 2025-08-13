@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ClimateBench 2.0 - Overview</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="header-title">ClimateBench 2.0</h1>
+      <p class="header-subtitle">Climate Model Benchmarking & Analysis Platform</p>
+    </div>
+  </header>
+
+  <nav class="navigation">
+    <div class="nav-container">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="index.html" class="nav-link">Overview</a>
+        </li>
+        <li class="nav-item">
+          <a href="scores.html" class="nav-link">Scores</a>
+        </li>
+        <li class="nav-item">
+          <a href="input.html" class="nav-link">Input Data</a>
+        </li>
+        <li class="nav-item">
+          <a href="paleo.html" class="nav-link active">Paleoclimate Data</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="overview-section">
+        <h2 class="section-title">Overview</h2>
+        <div style="display: flex; gap: 2em; flex-wrap: wrap;">
+            <div id="mae-heatmap" style="flex: 1; min-width: 400px; height: 700px;"></div>
+            <div id="obs-temp-scatter" style="flex: 1; min-width: 400px; height: 700px;"></div>
+        </div>
+    </div>
+
+    <div class="paleo-section" 
+        data-period="eocene" 
+        data-has-co2="true">
+        <h2 class="section-title">Eocene (~50 million years ago)</h2>
+        <div class="widget-menu">
+            <div class="widget-row" style="display: flex; gap: 1em; align-items: center;">
+                <div class="widget-group">
+                    <label>Model</label>
+                    <select id="eocene-model-select" class="widget-select">
+                        <option value="CESM1.2-CAM5">CESM1.2</option>
+                        <option value="COSMOS-landveg-r2413">COSMOS</option>
+                        <option value="GFDL-CM2.1">GFDL-CM2.1</option>
+                        <option value="HadCM3B-M2.1aN">HadCM3B</option>
+                        <option value="HadCM3BL-M2.1aN">HadCM3BL</option>
+                        <option value="INM-CM4-8">INM-CM4-8</option>
+                        <option value="IPSLCM5A2">IPSLCM5A2</option>
+                        <option value="MIROC4m">MIROC4m</option>
+                        <option value="NorESM1-F">NorESM1-F</option>
+                    </select>
+                </div>
+                <div class="widget-group co2-filter">
+                    <label>xCO2</label>
+                    <select id="eocene-co2-select" class="widget-select">
+                        <option value="1.0">x1</option>
+                        <option value="1.5">x1.5</option>
+                        <option value="2.0">x2</option>
+                        <option value="3.0">x3</option>
+                        <option value="4.0">x4</option>
+                        <option value="6.0">x6</option>
+                        <option value="9.0">x9</option>
+                    </select>
+                </div>
+                <div class="widget-group">
+                    <label>Region</label>
+                    <select id="eocene-region-select" class="widget-select">
+                        <option value="global">Global</option>
+                        <option value="northern_hemisphere">Northern Hemisphere</option>
+                        <option value="southern_hemisphere">Southern Hemisphere</option>
+                        <option value="tropics">Tropics</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div style="display: flex; gap: 2em; flex-wrap: wrap;">
+                <div style="width: 48%;">
+                    <img id="eocene-map-image" style="width: 100%;">
+                </div>
+                <div style="width: 49%;">
+                    <div id="eocene-plotly-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="paleo-section" 
+        data-period="midPliocene-eoi400" 
+        data-has-co2="false">
+        <h2 class="section-title">Pliocene (~3 million years ago)</h2>
+        <div class="widget-menu">
+            <div class="widget-row" style="display: flex; gap: 1em; align-items: center;">
+                <div class="widget-group">
+                    <label>Model</label>
+                    <select id="pliocene-model-select" class="widget-select">
+                        <option value="CESM2">CESM2</option>
+                        <option value="EC-Earth3-LR">EC-Earth3-LR</option>
+                        <option value="GISS-E2-1-G">GISS-E2-1-G</option>
+                        <option value="HadGEM3-GC31-LL">HadGEM3-GC31-LL</option>
+                        <option value="IPSL-CM6A-LR">IPSL-CM6A-LR</option>
+                        <option value="NorESM1-F">NorESM1-F</option>
+                    </select>
+                </div>
+                <div class="widget-group">
+                    <label>Region</label>
+                    <select id="pliocene-region-select" class="widget-select">
+                        <option value="global">Global</option>
+                        <option value="northern_hemisphere">Northern Hemisphere</option>
+                        <option value="southern_hemisphere">Southern Hemisphere</option>
+                        <option value="tropics">Tropics</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div style="display: flex; gap: 2em; flex-wrap: wrap;">
+                <div style="width: 48%;">
+                    <img id="pliocene-map-image" style="width: 100%;">
+                </div>
+                <div style="width: 49%;">
+                    <div id="pliocene-plotly-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="paleo-section" 
+        data-period="lig127k" 
+        data-has-co2="false">
+        <h2 class="section-title">Last Interglacial (~127 thousand years ago)</h2>
+        <div class="widget-menu">
+            <div class="widget-row" style="display: flex; gap: 1em; align-items: center;">
+                <div class="widget-group">
+                    <label>Model</label>
+                    <select id="lig127k-model-select" class="widget-select">
+                        <option value="ACCESS-ESM1-5">ACCESS-ESM1-5</option>
+                        <option value="AWI-ESM-1-1-LR">AWI-ESM-1-1-LR</option>
+                        <option value="CESM2">CESM2</option>
+                        <option value="EC-Earth3-LR">EC-Earth3-LR</option>
+                        <option value="FGOALS-f3-L">FGOALS-f3-L</option>
+                        <option value="FGOALS-g3">FGOALS-g3</option>
+                        <option value="GISS-E2-1-G">GISS-E2-1-G</option>
+                        <option value="HadGEM3-GC31-LL">HadGEM3-GC31-LL</option>
+                        <option value="INM-CM4-8">INM-CM4-8</option>
+                        <option value="IPSL-CM6A-LR">IPSL-CM6A-LR</option>
+                        <option value="NorESM1-F">NorESM1-F</option>
+                        <option value="NorESM2-LM">NorESM2-LM</option>
+                    </select>
+                </div>
+                <div class="widget-group">
+                    <label>Region</label>
+                    <select id="lig127k-region-select" class="widget-select">
+                        <option value="global">Global</option>
+                        <option value="northern_hemisphere">Northern Hemisphere</option>
+                        <option value="southern_hemisphere">Southern Hemisphere</option>
+                        <option value="tropics">Tropics</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div style="display: flex; gap: 2em; flex-wrap: wrap;">
+                <div style="width: 48%;">
+                    <img id="lig127k-map-image" style="width: 100%;">
+                </div>
+                <div style="width: 49%;">
+                    <div id="lig127k-plotly-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="paleo-section" 
+        data-period="lgm" 
+        data-has-co2="false">
+        <h2 class="section-title">Last Glacial Maximum (~21 thousand years ago)</h2>
+        <div class="widget-menu">
+            <div class="widget-row" style="display: flex; gap: 1em; align-items: center;">
+                <div class="widget-group">
+                    <label>Model</label>
+                    <select id="lgm-model-select" class="widget-select">
+                        <option value="CESM2-FV2">CESM2-FV2</option>
+                        <option value="INM-CM4-8">INM-CM4-8</option>
+                        <option value="MPI-ESM1-2-LR">MPI_ESM1-2-LR</option>
+                    </select>
+                </div>
+                <div class="widget-group">
+                    <label>Region</label>
+                    <select id="lgm-region-select" class="widget-select">
+                        <option value="global">Global</option>
+                        <option value="northern_hemisphere">Northern Hemisphere</option>
+                        <option value="southern_hemisphere">Southern Hemisphere</option>
+                        <option value="tropics">Tropics</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div style="display: flex; gap: 2em; flex-wrap: wrap;">
+                <div style="width: 48%;">
+                    <img id="lgm-map-image" style="width: 100%;">
+                </div>
+                <div style="width: 49%;">
+                    <div id="lgm-plotly-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="paleo-section" 
+        data-period="midHolocene" 
+        data-has-co2="false">
+        <h2 class="section-title">Mid Holocene (~6 thousand years ago)</h2>
+        <div class="widget-menu">
+            <div class="widget-row" style="display: flex; gap: 1em; align-items: center;">
+                <div class="widget-group">
+                    <label>Model</label>
+                    <select id="midHolocene-model-select" class="widget-select">
+                        <option value="ACCESS-ESM1-5">ACCESS-ESM1-5</option>
+                        <option value="AWI-ESM-1-1-LR">AWI-ESM-1-1-LR</option>
+                        <option value="CESM2">CESM2</option>
+                        <option value="EC-Earth3-LR">EC-Earth3-LR</option>
+                        <option value="FGOALS-f3-L">FGOALS-f3-L</option>
+                        <option value="FGOALS-g3">FGOALS-g3</option>
+                        <option value="GISS-E2-1-G">GISS-E2-1-G</option>
+                        <option value="HadGEM3-GC31-LL">HadGEM3-GC31-LL</option>
+                        <option value="INM-CM4-8">INM-CM4-8</option>
+                        <option value="IPSL-CM6A-LR">IPSL-CM6A-LR</option>
+                        <option value="MPI-ESM1-2-LR">MPI-ESM1-2-LR</option>
+                        <option value="MRI-ESM2-0">MRI-ESM2-0</option>
+                        <option value="NESM3">NESM3</option>
+                        <option value="NorESM1-F">NorESM1-F</option>
+                        <option value="NorESM2-LM">NorESM2-LM</option>
+                    </select>
+                </div>
+                <div class="widget-group">
+                    <label>Region</label>
+                    <select id="midHolocene-region-select" class="widget-select">
+                        <option value="global">Global</option>
+                        <option value="northern_hemisphere">Northern Hemisphere</option>
+                        <option value="southern_hemisphere">Southern Hemisphere</option>
+                        <option value="tropics">Tropics</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div style="display: flex; gap: 2em; flex-wrap: wrap;">
+                <div style="width: 48%;">
+                    <img id="midHolocene-map-image" style="width: 100%;">
+                </div>
+                <div style="width: 49%;">
+                    <div id="midHolocene-plotly-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  </main>
+
+  <footer><p>&copy; 2025 CAL.</p></footer>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+    Plotly.d3.csv("data/images/paleo_data/annual_global_mean_obs.csv", function(err, obsRows) {
+        if (err) return console.error("Error loading obs CSV:", err);
+
+        const periodLabels = [
+            "Eocene",
+            "Pliocene",
+            "Last Interglacial",
+            "Last Glacial Maximum",
+            "Mid Holocene"
+        ];
+        const periodIndices = [0,1,2,3,4];
+
+        // Sort obs by period_idx
+        obsRows.sort((a, b) => +a.period_idx - +b.period_idx);
+
+        const obsTrace = {
+            x: periodIndices.map(i => i + 1),
+            y: obsRows.map(r => +r["tas_anom"]),
+            type: 'scatter',
+            mode: 'markers',
+            name: 'Observed',
+            marker: { size: 10, color: 'royalblue', symbol: 'circle' },
+            error_y: {
+                type: 'data',
+                array: obsRows.map(r => +r["error"]),
+                visible: true,
+                color: 'black',
+                thickness: 1.5,
+                width: 5
+            }
+        };
+
+        Plotly.d3.csv("data/images/paleo_data/annual_zonal_means.csv", function(err, modelRows) {
+            if (err) return console.error("Error loading model CSV:", err);
+
+            // Filter for global region only & Eocene 3x CO₂
+            modelRows = modelRows.filter(r => {
+                if (r.region !== "global") return false;
+                if (r.period === "eocene") return +r.co2_exp === 3.0;
+                return true;
+            });
+
+            const modelConfigs = [...new Set(modelRows.map(r => `${r.model}__${r.co2_exp || 'none'}`))];
+
+            const modelTraces = modelConfigs.map(config => {
+                const [model, co2] = config.split("__");
+
+                const yVals = periodIndices.map(i => {
+                    const match = modelRows.find(r => 
+                        r.model === model &&
+                        +r.period_idx === i &&
+                        (r.co2_exp == co2 || (!r.co2_exp && co2 === 'none'))
+                    );
+                    return match ? +match.tas_anom : null;
+                });
+
+                // Offset x only for non-null y
+                const xVals = periodIndices.map(i => i + 1.2);
+
+                return {
+                    x: xVals,
+                    y: yVals,
+                    mode: 'markers',
+                    connectgaps: false,
+                    name: model,
+                    marker: { size: 8 }
+                };
+            });
+
+            const layout = {
+                title: { text: "GMST Anomalies (°C)", x: 0.5 },
+                xaxis: {
+                    tickmode: "array",
+                    tickvals: periodIndices.map(i => i + 1),
+                    ticktext: periodLabels,
+                    showgrid: false
+                },
+                margin: { t: 50, b: 100, l: 80, r: 20 }
+            };
+
+            Plotly.newPlot("obs-temp-scatter", [obsTrace, ...modelTraces], layout, {responsive: true});
+        });
+    });
+
+    Plotly.d3.csv("data/images/paleo_data/annual_zonal_means.csv", function(err, rows) {
+        if (err) {
+            console.error("Error loading CSV:", err);
+            return;
+        }
+
+        // Filter only global region
+        rows = rows.filter(r => {
+            if (r.region !== "global") return false;
+            if (r.period === "eocene") return r.co2_exp === "3.0";
+            return true;
+        });
+
+        // Fixed period order (internal values for matching data)
+        const periods = ["eocene", "midPliocene-eoi400", "lig127k", "lgm", "midHolocene"];
+
+        // Custom display labels
+        const periodLabels = [
+            "Eocene",
+            "Pliocene",
+            "Last Interglacial",
+            "Last Glacial Maximum",
+            "Mid Holocene"
+        ];
+
+        // Get sorted model list
+        const models = [...new Set(rows.map(r => r.model))].sort();
+
+        // Create z matrix where rows = models, cols = periods
+        const z = models.map(model => {
+            return periods.map(period => {
+                const matching = rows.filter(r => r.model === model && r.period === period);
+                if (matching.length === 0) return null;
+                const maeValues = matching.map(r => +r.nmae);
+                return maeValues.reduce((a, b) => a + b, 0) / maeValues.length;
+            });
+        });
+
+        const data = [{
+            z: z,
+            x: periods,
+            y: models,
+            type: 'heatmap',
+            colorscale: 'RdBu',
+            reversescale: false,
+            colorbar: { title: 'nMAE' }
+        }];
+
+        const layout = {
+            title: { text: 'Normalized MAE of GMST Anomalies (°C)', x: 0.5 },
+            xaxis: {
+                tickmode: "array",
+                tickvals: periods,
+                ticktext: periodLabels,
+                showgrid: false,
+                zeroline: false
+            },
+            yaxis: {
+                automargin: true,
+                showgrid: false,
+                zeroline: false
+            },
+            margin: { t: 50, b: 120, l: 150, r: 30 }
+        };
+
+        Plotly.newPlot('mae-heatmap', data, layout, {responsive: true});
+    });
+
+    function initPaleoSection(sectionEl) {
+        const period = sectionEl.dataset.period;
+        const hasCo2 = sectionEl.dataset.hasCo2 === "true";
+
+        const modelSelect = sectionEl.querySelector('[id$="model-select"]');
+        const regionSelect = sectionEl.querySelector('[id$="region-select"]');
+        const co2Select = hasCo2 ? sectionEl.querySelector('[id$="co2-select"]') : null;
+        const imgEl = sectionEl.querySelector('img');
+        const chartId = sectionEl.querySelector('div[id$="plotly-chart"]').id;
+
+        function updateMap() {
+            let imgPath = `data/images/paleo_data/${period}/${modelSelect.value}`;
+            if (hasCo2) imgPath += `_${co2Select.value}`;
+            imgPath += `.png`;
+            imgEl.src = imgPath;
+            imgEl.alt = `${period} map for ${modelSelect.value}`;
+        }
+
+        function updatePlot() {
+            Plotly.d3.csv("data/images/paleo_data/monthly_zonal_means.csv", (err, rows) => {
+                if (err) return console.error(err);
+
+                let filtered = rows.filter(r => 
+                    r.period === period && 
+                    r.region === regionSelect.value &&
+                    (!hasCo2 || r.co2_exp === co2Select.value)
+                );
+
+                const models = [...new Set(filtered.map(r => r.model))];
+                const traces = models.map(m => {
+                    const mdata = filtered.filter(r => r.model === m);
+                    return {
+                        x: mdata.map(r => +r.month),
+                        y: mdata.map(r => +r.tas),
+                        mode: 'lines+markers',
+                        name: m
+                    };
+                });
+
+                Plotly.newPlot(chartId, traces, {
+                    // title: `Monthly Avg Temp (°C) (${regionSelect.value})`,
+                    xaxis: { dtick: 2,}, // title: 'Month' 
+                    margin: { t: 40, b: 80 },
+                    legend: {
+                        orientation: 'h',
+                        y: -0.3,
+                        x: 0.5,
+                        xanchor: 'center'
+                    }
+                }, {responsive: true});
+            });
+        }
+
+        // Event listeners
+        modelSelect.addEventListener('change', () => { updateMap(); updatePlot(); });
+        regionSelect.addEventListener('change', updatePlot);
+        if (hasCo2) co2Select.addEventListener('change', () => { updateMap(); updatePlot(); });
+
+        // Init
+        updateMap();
+        updatePlot();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.paleo-section').forEach(initPaleoSection);
+    });
+    </script>
+</body>
+</html>
