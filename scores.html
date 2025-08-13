@@ -270,16 +270,40 @@
       tsMonthly = Papa.parse(tsMonthlyCSV, { header: true, dynamicTyping: true }).data;
       tsAnnual = Papa.parse(tsAnnualCSV, { header: true, dynamicTyping: true }).data;
       
-      // Parse CRPS time series data (monthly)
-      const crpsTSMonthly = Papa.parse(crpsTSMonthlyCSV, { header: true, dynamicTyping: true }).data;
+      // Parse CRPS time series data (monthly) and convert to match regular format
+      const crpsTSMonthlyRaw = Papa.parse(crpsTSMonthlyCSV, { header: true, dynamicTyping: true }).data;
       
-      // Parse CRPS time series data (annual)
-      const crpsTSAnnual = Papa.parse(crpsTSAnnualCSV, { header: true, dynamicTyping: true }).data;
+      // Convert CRPS monthly data to match timeseries format
+      const crpsTSMonthly = crpsTSMonthlyRaw.map(row => ({
+        model: row.model_name,
+        variable: row.variable_name,
+        metric: row.metric,
+        time: row.time,
+        global: row.global,
+        northern_hemisphere: row.northern_hemisphere,
+        southern_hemisphere: row.southern_hemisphere,
+        tropics: row.tropics
+      }));
+      
+      // Parse CRPS annual time series data and convert to timeseries format
+      const crpsTSAnnualRaw = Papa.parse(crpsTSAnnualCSV, { header: true, dynamicTyping: true }).data;
+      
+      // Convert CRPS annual data to match timeseries format
+      const crpsTSAnnual = crpsTSAnnualRaw.map(row => ({
+        model: row.model_name,
+        variable: row.variable_name,
+        metric: row.metric,
+        year: new Date(row.time).getFullYear(),
+        global: row.global,
+        northern_hemisphere: row.northern_hemisphere,
+        southern_hemisphere: row.southern_hemisphere,
+        tropics: row.tropics
+      }));
       
       // Remove duplicates from CRPS time series data
       const crpsTSMonthlyMap = new Map();
       crpsTSMonthly.forEach(row => {
-        const key = `${row.model_name}-${row.variable_name}-${row.time}-${row.metric}`;
+        const key = `${row.model}-${row.variable}-${row.time}-${row.metric}`;
         if (!crpsTSMonthlyMap.has(key)) {
           crpsTSMonthlyMap.set(key, row);
         }
@@ -289,7 +313,7 @@
       // Remove duplicates from CRPS annual time series data
       const crpsTSAnnualMap = new Map();
       crpsTSAnnual.forEach(row => {
-        const key = `${row.model_name}-${row.variable_name}-${row.year}-${row.metric}`;
+        const key = `${row.model}-${row.variable}-${row.year}-${row.metric}`;
         if (!crpsTSAnnualMap.has(key)) {
           crpsTSAnnualMap.set(key, row);
         }
@@ -335,13 +359,12 @@
         const tsData = resolution === "monthly" ? tsMonthly : tsAnnual;
         const timeKey = resolution === "monthly" ? "time" : "year";
         
-        // Handle different column names for CRPS vs regular metrics
-        const modelKey = isCRPS ? "model_name" : "model";
-        const variableKey = isCRPS ? "variable_name" : "variable";
+        // After conversion, all data uses the same column names
+        const modelKey = "model";
+        const variableKey = "variable";
         
-        const filtered = tsData.filter(d =>
-          d[variableKey] === varVal &&
-          d.metric === metValChart
+        const filtered = tsData.filter(d => 
+          d[variableKey] === varVal && d.metric === metValChart
         );
 
         const traces = {};
