@@ -261,7 +261,7 @@
       fetch('data/benchmark_results_time_series.csv').then(res => res.text()),
       fetch('data/benchmark_results_time_series_annual.csv').then(res => res.text()),
       fetch('data/crps_benchmark_timeseries.csv').then(res => res.text()),
-      fetch('data/crps_benchmark_results_annual.csv').then(res => res.text())
+      fetch('data/crps_benchmark_timeseries_annual.csv').then(res => res.text())
     ])
     .then(([tsMonthlyCSV, tsAnnualCSV, crpsTSMonthlyCSV, crpsTSAnnualCSV]) => {
       tsMonthly = Papa.parse(tsMonthlyCSV, { header: true, dynamicTyping: true }).data;
@@ -282,11 +282,11 @@
         tropics: row.tropics
       }));
       
-      // Parse CRPS annual data and convert to timeseries format
-      const crpsAnnualRaw = Papa.parse(crpsTSAnnualCSV, { header: true, dynamicTyping: true }).data;
+      // Parse CRPS annual time series data and convert to timeseries format
+      const crpsTSAnnualRaw = Papa.parse(crpsTSAnnualCSV, { header: true, dynamicTyping: true }).data;
       
       // Convert CRPS annual data to match timeseries format
-      const crpsTSAnnual = crpsAnnualRaw.map(row => ({
+      const crpsTSAnnual = crpsTSAnnualRaw.map(row => ({
         model: row.model_name,
         variable: row.variable_name,
         metric: row.metric,
