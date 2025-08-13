@@ -65,13 +65,13 @@
                 <div class="widget-group co2-filter">
                     <label>xCO2</label>
                     <select id="eocene-co2-select" class="widget-select">
-                        <option value="x1">x1</option>
-                        <option value="x1.5">x1.5</option>
-                        <option value="x2">x2</option>
-                        <option value="x3">x3</option>
-                        <option value="x4">x4</option>
-                        <option value="x6">x6</option>
-                        <option value="x9">x9</option>
+                        <option value="1.0">x1</option>
+                        <option value="1.5">x1.5</option>
+                        <option value="2.0">x2</option>
+                        <option value="3.0">x3</option>
+                        <option value="4.0">x4</option>
+                        <option value="6.0">x6</option>
+                        <option value="9.0">x9</option>
                     </select>
                 </div>
                 <div class="widget-group">
@@ -82,6 +82,16 @@
                         <option value="southern_hemisphere">Southern Hemisphere</option>
                         <option value="tropics">Tropics</option>
                     </select>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
                 </div>
             </div>
         </div>
@@ -124,6 +134,16 @@
                         <option value="southern_hemisphere">Southern Hemisphere</option>
                         <option value="tropics">Tropics</option>
                     </select>
+                </div>
+            </div>
+        </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
                 </div>
             </div>
         </div>
@@ -173,6 +193,16 @@
                 </div>
             </div>
         </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
         <div class="chart-container">
             <div style="display: flex; gap: 2em; flex-wrap: wrap;">
                 <div style="width: 48%;">
@@ -207,6 +237,16 @@
                         <option value="southern_hemisphere">Southern Hemisphere</option>
                         <option value="tropics">Tropics</option>
                     </select>
+                </div>
+            </div>
+        </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
                 </div>
             </div>
         </div>
@@ -259,6 +299,16 @@
                 </div>
             </div>
         </div>
+                <div>
+            <div style="display: flex; gap: 2em; flex-wrap: wrap; height: 200;">
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;" >Annual Average Temperature (°C) </h2>
+                </div>
+                <div style="width: 48%; align-items: center;">
+                    <h2 style="text-align: center;">Monthly Average Temperature (°C)</h2>
+                </div>
+            </div>
+        </div>
         <div class="chart-container">
             <div style="display: flex; gap: 2em; flex-wrap: wrap;">
                 <div style="width: 48%;">
@@ -280,8 +330,6 @@
     Plotly.d3.csv("data/images/paleo_data/annual_global_mean_obs.csv", function(err, obsRows) {
         if (err) return console.error("Error loading obs CSV:", err);
 
-        // Fixed display order + labels
-        const periodOrder = ["EECO", "MPWP", "lig127k", "LGM", "midHolocene"];
         const periodLabels = [
             "Eocene",
             "Pliocene",
@@ -289,20 +337,21 @@
             "Last Glacial Maximum",
             "Mid Holocene"
         ];
+        const periodIndices = [0,1,2,3,4];
 
-        // Sort obs
-        obsRows.sort((a, b) => periodOrder.indexOf(a["Time Period"]) - periodOrder.indexOf(b["Time Period"]));
+        // Sort obs by period_idx
+        obsRows.sort((a, b) => +a.period_idx - +b.period_idx);
 
         const obsTrace = {
-            x: obsRows.map(r => r["Time Period"]),
-            y: obsRows.map(r => +r["mean temperature [degreesC]"]),
+            x: periodIndices.map(i => i + 1),
+            y: obsRows.map(r => +r["tas_anom"]),
             type: 'scatter',
             mode: 'markers',
             name: 'Observed',
             marker: { size: 10, color: 'royalblue', symbol: 'circle' },
             error_y: {
                 type: 'data',
-                array: obsRows.map(r => +r["error [degreesC]"]),
+                array: obsRows.map(r => +r["error"]),
                 visible: true,
                 color: 'black',
                 thickness: 1.5,
@@ -310,56 +359,57 @@
             }
         };
 
-        // Now load the model data and overlay
         Plotly.d3.csv("data/images/paleo_data/annual_zonal_means.csv", function(err, modelRows) {
             if (err) return console.error("Error loading model CSV:", err);
 
-            // Map obs periods -> model periods
-            const periodMap = {
-                "EECO": "eocene",
-                "MPWP": "midPliocene-eoi400",
-                "lig127k": "lig127k",
-                "LGM": "lgm",
-                "midHolocene": "midHolocene"
-            };
+            // Filter for global region only & Eocene 3x CO₂
+            modelRows = modelRows.filter(r => {
+                if (r.region !== "global") return false;
+                if (r.period === "eocene") return +r.co2_exp === 3.0;
+                return true;
+            });
 
-            // Filter for global region only
-            modelRows = modelRows.filter(r => r.region === "global");
+            const modelConfigs = [...new Set(modelRows.map(r => `${r.model}__${r.co2_exp || 'none'}`))];
 
-            // Get unique models
-            const models = [...new Set(modelRows.map(r => r.model))];
+            const modelTraces = modelConfigs.map(config => {
+                const [model, co2] = config.split("__");
 
-            const modelTraces = models.map(m => {
-                const points = periodOrder.map(period => {
-                    const match = modelRows.find(r => r.model === m && r.period === periodMap[period]);
-                    return match ? +match.tas_anomaly : null;
+                const yVals = periodIndices.map(i => {
+                    const match = modelRows.find(r => 
+                        r.model === model &&
+                        +r.period_idx === i &&
+                        (r.co2_exp == co2 || (!r.co2_exp && co2 === 'none'))
+                    );
+                    return match ? +match.tas_anom : null;
                 });
+
+                // Offset x only for non-null y
+                const xVals = periodIndices.map(i => i + 1.2);
+
                 return {
-                    x: periodOrder,
-                    y: points,
-                    mode: 'lines+markers',
-                    name: m,
-                    line: { width: 1 },
+                    x: xVals,
+                    y: yVals,
+                    mode: 'markers',
+                    connectgaps: false,
+                    name: model,
                     marker: { size: 8 }
                 };
             });
 
             const layout = {
-                title: { text: "Observed vs Model Global Temperature Anomalies", x: 0.5 },
+                title: { text: "GMST Anomalies (°C)", x: 0.5 },
                 xaxis: {
                     tickmode: "array",
-                    tickvals: periodOrder,
+                    tickvals: periodIndices.map(i => i + 1),
                     ticktext: periodLabels,
                     showgrid: false
                 },
-                yaxis: { title: "Temperature Anomaly (°C)", zeroline: false },
                 margin: { t: 50, b: 100, l: 80, r: 20 }
             };
 
             Plotly.newPlot("obs-temp-scatter", [obsTrace, ...modelTraces], layout, {responsive: true});
         });
     });
-
 
     Plotly.d3.csv("data/images/paleo_data/annual_zonal_means.csv", function(err, rows) {
         if (err) {
@@ -368,7 +418,11 @@
         }
 
         // Filter only global region
-        rows = rows.filter(r => r.region === "global");
+        rows = rows.filter(r => {
+            if (r.region !== "global") return false;
+            if (r.period === "eocene") return r.co2_exp === "3.0";
+            return true;
+        });
 
         // Fixed period order (internal values for matching data)
         const periods = ["eocene", "midPliocene-eoi400", "lig127k", "lgm", "midHolocene"];
@@ -390,7 +444,7 @@
             return periods.map(period => {
                 const matching = rows.filter(r => r.model === model && r.period === period);
                 if (matching.length === 0) return null;
-                const maeValues = matching.map(r => +r.mae);
+                const maeValues = matching.map(r => +r.nmae);
                 return maeValues.reduce((a, b) => a + b, 0) / maeValues.length;
             });
         });
@@ -400,13 +454,13 @@
             x: periods,
             y: models,
             type: 'heatmap',
-            colorscale: 'Oranges',
+            colorscale: 'RdBu',
             reversescale: false,
-            colorbar: { title: 'MAE' }
+            colorbar: { title: 'nMAE' }
         }];
 
         const layout = {
-            title: { text: 'Pre-Industrial SAT Anomaly Model Error', x: 0.5 },
+            title: { text: 'Normalized MAE of GMST Anomalies (°C)', x: 0.5 },
             xaxis: {
                 tickmode: "array",
                 tickvals: periods,
@@ -465,9 +519,8 @@
                 });
 
                 Plotly.newPlot(chartId, traces, {
-                    title: `Monthly Avg Temp (${regionSelect.value})`,
-                    xaxis: { dtick: 1, title: 'Month' },
-                    yaxis: { title: 'Temperature (K)' },
+                    // title: `Monthly Avg Temp (°C) (${regionSelect.value})`,
+                    xaxis: { dtick: 2,}, // title: 'Month' 
                     margin: { t: 40, b: 80 },
                     legend: {
                         orientation: 'h',
