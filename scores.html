@@ -35,7 +35,7 @@
 
   <main class="main-content">
     <div class="probabilistic-scores">
-      <h2 class="section-title">Benchmark Scores</h2>
+      <h2 class="section-title">Data Selection</h2>
       
       <div class="widget-menu">
         <div class="widget-row">
@@ -81,12 +81,28 @@
               <option value="">None</option>
             </select>
           </div>
+
+          <div class="widget-group">
+            <label>Time Resolution</label>
+            <div style="display: flex; gap: 20px; align-items: center; padding: 12px 0;">
+              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="ts-resolution" value="annual" checked style="margin: 0;">
+                Annual
+              </label>
+              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <input type="radio" name="ts-resolution" value="monthly" style="margin: 0;">
+                Monthly
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
+      <h2 class="section-title">Benchmark Scores</h2>
+      <p>The following scores are calculated using the zonal mean of a three-member ensemble for each model (r1:3i1p1f1). The ensemble mean is compared to an observational dataset at a monthly time resolution. For more information on the observational datasets used, see the <a href="input.html" class="nav-link">input data</a> tab.</p>
       <div class="chart-container">
         <div style="overflow-x:auto; width: 100%;">
-          <table id="score-table" class="table" border="1" cellspacing="0" cellpadding="6">
+          <table id="score-table" class="table" border="0" cellspacing="0" cellpadding="3">
             <thead></thead>
             <tbody></tbody>
           </table>
@@ -94,23 +110,9 @@
       </div>
 
       <div class="chart-container">
-        <h3 class="chart-title">Time Series Analysis</h3>
-        <div class="widget-row">
-          <div class="widget-group">
-            <label>Time Resolution</label>
-            <div style="display: flex; gap: 20px; align-items: center; padding: 12px 0;">
-              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                <input type="radio" name="ts-resolution" value="monthly" checked style="margin: 0;">
-                Monthly
-              </label>
-              <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                <input type="radio" name="ts-resolution" value="annual" style="margin: 0;">
-                Annual
-              </label>
-            </div>
-          </div>
-        </div>
-        <div id="time-series-plot" style="width:100%; height:500px; margin-top: 2em;"></div>
+        <h3 class="chart-head" id="timeseries-title" style="width:100%; margin-top: 2em;">Time Series Analysis</h3>
+        <p>The selected metric is calculated at each monthly time step for the regional bounds. Annual data is averaged from the monthly scores.</p>
+        <div id="time-series-plot" style="width:100%; height:500px;"></div>
       </div>
     </div>
   </main>
@@ -215,7 +217,7 @@
           const va = parseFloat(a[sortKey]);
           const vb = parseFloat(b[sortKey]);
           if (isNaN(va) || isNaN(vb)) return 0;
-          return va - vb; // ascending
+          return (va - vb)*-1; // descending
         });
       }
 
@@ -378,11 +380,19 @@
           traces[m].y.push(yVal);
         });
 
+        const title_var_map = { 'tas': 'surface air temperature (°C)', 'pr': 'precipitation (kg/m2s)', 'clt': 'cloud area fraction (%)', 'tos': 'sea surface temperature (°C)', 'od550aer': 'aerosol optical depth at 550nm' };
+        const title_region_map = { 'global': 'global', 'northern_hemisphere': 'northern hemisphere', 'southern_hemisphere': 'southern hemisphere', 'tropics': 'tropical',};
+      
+        const region = title_region_map[document.getElementById('filter-region').value];
+        const variable_name = title_var_map[varVal];
+
+        document.getElementById('timeseries-title').textContent = `${metValChart} of ${resolution} ${region} ${variable_name}`;
+
         const data = Object.values(traces);
         const layout = {
-          title: `${metValChart} over ${resolution} time for ${varVal} (${regVal.replace('_', ' ')})`,
+          // title: `${metValChart} over ${resolution} time for ${varVal} (${regVal.replace('_', ' ')})`,
           // xaxis: { title: resolution === "monthly" ? "Month" : "Year" },
-          yaxis: { title: metValChart },
+          // yaxis: { title: metValChart },
           legend: { orientation: 'h', x: 0, y: -0.1 }
         };
 
