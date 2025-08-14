@@ -61,7 +61,7 @@
 
   <main class="main-content">
     <div class="input-section">
-      <h2 class="section-title">Zonal Mean Time Series</h2>
+      <h2 class="section-title">Data Selection</h2>
 
       <div class="widget-menu">
         <div class="widget-row">
@@ -98,24 +98,26 @@
             <label>Time Resolution</label>
             <div style="display: flex; gap: 20px; align-items: center; padding: 12px 0;">
               <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                <input type="radio" name="resolution" value="monthly" checked style="margin: 0;">
-                Monthly
+                <input type="radio" name="resolution" value="annual" checked style="margin: 0;">
+                Annual
               </label>
               <label style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                <input type="radio" name="resolution" value="annual" style="margin: 0;">
-                Annual
+                <input type="radio" name="resolution" value="monthly" style="margin: 0;">
+                Monthly
               </label>
             </div>
           </div>
         </div>
       </div>
+      <h2 class="section-title">Model and Observation Data</h2>
 
       <div class="chart-container">
-        <div id="timeseries-chart" style="width:100%; height:500px; margin-top: 2em;"></div>
+        <h3 class="chart-head" id="timeseries-title">HOLD</h3>
+        <div id="timeseries-chart" style="width:100%; height:400px; margin-top: 2em;"></div>
       </div>
 
       <div class="chart-container">
-        <h3 class="chart-title" id="map-title">Model Map Image</h3>
+        <h3 class="chart-head" id="map-title">Model Map Images</h3>
         <div id="map-image-container" style="display: flex; justify-content: center; gap: 2em; align-items: start; flex-wrap: wrap;">
           <div>
             <img id="map-image" src="" alt="Model Map" style="width: 49%; height: auto;" />
@@ -151,12 +153,22 @@
     }
 
     function updateSliderResolution(resolution) {
-      const max = resolution === 'monthly' ? 240 - 1 : 21 - 1;
-      const min = resolution === 'monthly' ? 0 : 1;
+      const max = resolution === 'annual' ? 21 - 1: 240 - 1;
+      const min = resolution === 'annual' ? 1 : 0;
       slider.min = min;
       slider.max = max;
       slider.value = 0;
       generateSliderTicks(resolution);
+    }
+
+    function updateChartTitle() {
+      const title_var_map = { 'tas': 'surface air temperature (°C)', 'pr': 'precipitation (kg/m2s)', 'clt': 'cloud area fraction (%)', 'tos': 'sea surface temperature (°C)', 'od550aer': 'aerosol optical depth at 550nm' };
+      const title_region_map = { 'global': 'global', 'northern_hemisphere': 'northern hemisphere', 'southern_hemisphere': 'southern hemisphere', 'tropics': 'tropical',};
+      const model = document.getElementById('model-select').value;
+      const region = title_region_map[document.getElementById('region-select').value];
+      const variable = title_var_map[document.getElementById('variable-select').value];
+      const resolution = document.querySelector('input[name="resolution"]:checked').value;
+      document.getElementById('timeseries-title').textContent = `${model} ${region} ${resolution} ${variable}`;
     }
 
     function updateMapImage() {
@@ -165,9 +177,9 @@
       const resolution = document.querySelector('input[name="resolution"]:checked').value;
       const rawDate = getDateFromSlider(slider.value); // could be "YYYY" or "YYYY-MM"
 
-      const date = resolution === 'monthly'
-        ? `${rawDate}-01`
-        : `${rawDate}-01-01`;
+      const date = resolution === 'annual'
+        ? `${rawDate}-01-01`
+        : `${rawDate}-01`;
 
       const basePath = `data/images/${model}/${resolution}/${variable}`;
       const modelPath = `${basePath}/data/${date}.png`;
@@ -182,10 +194,11 @@
       errorImg.src = errorPath;
       errorImg.alt = `Model error for ${model} on ${date}`;
 
-      document.getElementById('map-title').textContent = `Map Image – ${date}`;
+      // document.getElementById('map-title').textContent = `Map Image – ${date}`;
+      document.getElementById('map-title').textContent = `${model} ${resolution} data and error for ${date}`;
     }
 
-    function generateSliderTicks(resolution = 'monthly') {
+    function generateSliderTicks(resolution = 'annual') {
       const tickContainer = document.getElementById('year-ticks');
       tickContainer.innerHTML = '';
 
@@ -221,7 +234,7 @@
         x: modelFiltered.map(row => row.time),
         y: modelFiltered.map(row => parseFloat(row[variable])),
         mode: 'lines',
-        name: `${model} (model)`,
+        name: `Model (${model})`,
         line: { color: '#1f77b4' }
       };
 
@@ -279,6 +292,7 @@
       const model = document.getElementById('model-select').value;
       const region = document.getElementById('region-select').value;
       renderChart(variable, model, region);
+      updateChartTitle();
     }
 
     function loadData(resolution) {
@@ -306,7 +320,7 @@
     let modelData = [], obsData = [];
 
     document.addEventListener('DOMContentLoaded', () => {
-      loadData('monthly');
+      loadData('annual');
 
       document.getElementById('variable-select').addEventListener('change', applyFilters);
       document.getElementById('region-select').addEventListener('change', applyFilters);
