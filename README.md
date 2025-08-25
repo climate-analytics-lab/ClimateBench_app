@@ -3,7 +3,7 @@ Frontend application for exploring results from ClimateBench 2.0
 
 Live app: [https://climate-analytics-lab.github.io/ClimateBench_app/index.html](https://climate-analytics-lab.github.io/ClimateBench_app/index.html)
 
-### How to contribute
+## How to contribute
 The framework can be expanded to include more models, variables, metrics, and regions. To add more data, create a pull request with the following changes:
 1. Rows with relevant data added to `data/benchmark_results.csv`
     - This will add your score to the table in the scores tab
@@ -26,3 +26,10 @@ The framework can be expanded to include more models, variables, metrics, and re
         - [Last Interglacial](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/paleo.html#L167-L184)
         - [Last Glacial Maximum](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/paleo.html#L224-L231)
         - [Mid Holocene](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/paleo.html#L271-L290)
+
+## Local development
+You will need to install npm ([instructions](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)). Then, from the top level of the repo run
+```
+npx http-server
+```
+Which will run the app locally at http://127.0.0.1:8080
