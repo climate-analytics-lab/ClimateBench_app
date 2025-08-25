@@ -1,5 +1,6 @@
 # ClimateBench 2.0 Web App
 Frontend application for exploring results from ClimateBench 2.0
+
 Live app: [https://climate-analytics-lab.github.io/ClimateBench_app/index.html](https://climate-analytics-lab.github.io/ClimateBench_app/index.html)
 
 ### How to contribute
@@ -17,9 +18,9 @@ The framework can be expanded to include more models, variables, metrics, and re
         - [region](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/scores.html#L297)
         - [metric](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/scores.html#L260-L264)
 3. Paleo changes can be made by
-    a. Adding data to `data/paleo_data/annual_zonal_means.csv`. You will need to recalculate the median and normalized mae columns. This will add your data to the two overview figures.
-    b. Adding data to `data/paleo_data/monthly_zonal_means.csv`. This will add your data to the seasonal plots. 
-    c. Adding data to the map options. You will need to create the map image first, and then add to the relevant paleo period folder `data/paleo_data/{paleo period}/{model}.png`. Then you will need to modify the dropdown options to include the added model.
+    - Adding data to `data/paleo_data/annual_zonal_means.csv`. You will need to recalculate the median and normalized mae columns. This will add your data to the two overview figures.
+    - Adding data to `data/paleo_data/monthly_zonal_means.csv`. This will add your data to the seasonal plots. 
+    - Adding data to the map options. You will need to create the map image first, and then add to the relevant paleo period folder `data/paleo_data/{paleo period}/{model}.png`. Then you will need to modify the dropdown options to include the added model.
         - [Eocene](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/paleo.html#L51-L64)
         - [Pliocene](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/paleo.html#L118-L128)
         - [Last Interglacial](https://github.com/climate-analytics-lab/ClimateBench_app/blob/main/paleo.html#L167-L184)
