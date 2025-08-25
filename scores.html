@@ -66,12 +66,12 @@
               <option value="zonal_mean_mae" selected>MAE</option>
               <option value="zonal_mean_rmse">RMSE</option>
               <option value="zonal_mean_crps">CRPS</option>
-              <option value="zonal_mean_mae_bias_adjusted">MAE (bias adjusted)</option>
+              <!-- <option value="zonal_mean_mae_bias_adjusted">MAE (bias adjusted)</option>
               <option value="zonal_mean_rmse_bias_adjusted">RMSE (bias adjusted)</option>
               <option value="zonal_mean_crps_bias_adjusted">CRPS (bias adjusted)</option>
               <option value="zonal_mean_mae_anomaly">MAE (anomaly)</option>
               <option value="zonal_mean_rmse_anomaly">RMSE (anomaly)</option>
-              <option value="zonal_mean_crps_anomaly">CRPS (anomaly)</option>
+              <option value="zonal_mean_crps_anomaly">CRPS (anomaly)</option> -->
             </select>
           </div>
 
@@ -126,8 +126,7 @@
     let headers = [];
     let tsMonthly = [], tsAnnual = [];
     let benchmarkData = [];
-    let crpsData = [];
-
+    
     const headerDisplayNames = {
       "model": "Model Name",
       "Historical (2005-2014)": "Historical (2005-2014)",
@@ -135,15 +134,6 @@
       "Change (hist 2005)": "Change",
       "Percent Change (hist 2005)": "Percent Change",
     };
-
-    function isCRPSMetric(metric) {
-      return metric && metric.includes('crps');
-    }
-
-    function getCurrentData() {
-      const metVal = document.getElementById('filter-metric').value;
-      return isCRPSMetric(metVal) ? crpsData : benchmarkData;
-    }
 
     function renderTable(data) {
       const table = document.getElementById('score-table');
@@ -203,8 +193,7 @@
       const metVal = document.getElementById('filter-metric').value;
       const regVal = document.getElementById('filter-region').value;
 
-      const currentData = getCurrentData();
-      const filtered = currentData.filter(row =>
+      const filtered = benchmarkData.filter(row =>
         (!varVal || row['variable'] === varVal) &&
         (!metVal || row['metric'] === metVal) &&
         (!regVal || row['region'] === regVal)
@@ -227,23 +216,11 @@
     // Load both benchmark and CRPS data
     Promise.all([
       fetch('data/benchmark_results.csv').then(res => res.text()),
-      fetch('data/crps_benchmark_results.csv').then(res => res.text())
     ])
-    .then(([benchmarkCSV, crpsCSV]) => {
+    .then(([benchmarkCSV]) => {
       const benchmarkParsed = Papa.parse(benchmarkCSV, { header: true });
-      const crpsParsed = Papa.parse(crpsCSV, { header: true });
       
       benchmarkData = benchmarkParsed.data.filter(row => row.model);
-      
-      // Remove duplicates from CRPS data based on model, variable, metric, and region
-      const crpsDataMap = new Map();
-      crpsParsed.data.filter(row => row.model).forEach(row => {
-        const key = `${row.model}-${row.variable}-${row.metric}-${row.region}`;
-        if (!crpsDataMap.has(key)) {
-          crpsDataMap.set(key, row);
-        }
-      });
-      crpsData = Array.from(crpsDataMap.values());
       
       // Set headers from benchmark data initially
       headers = benchmarkParsed.meta.fields.slice(1); // skip unnamed index
@@ -263,70 +240,12 @@
 
     // Load time series data
     Promise.all([
-      fetch('data/benchmark_results_time_series.csv').then(res => res.text()),
-      fetch('data/benchmark_results_time_series_annual.csv').then(res => res.text()),
-      fetch('data/crps_benchmark_timeseries.csv').then(res => res.text()),
-      fetch('data/crps_benchmark_timeseries_annual.csv').then(res => res.text())
+      fetch('data/benchmark_results_timeseries.csv').then(res => res.text()),
+      fetch('data/benchmark_results_timeseries_annual.csv').then(res => res.text()),
     ])
-    .then(([tsMonthlyCSV, tsAnnualCSV, crpsTSMonthlyCSV, crpsTSAnnualCSV]) => {
+    .then(([tsMonthlyCSV, tsAnnualCSV]) => {
       tsMonthly = Papa.parse(tsMonthlyCSV, { header: true, dynamicTyping: true }).data;
       tsAnnual = Papa.parse(tsAnnualCSV, { header: true, dynamicTyping: true }).data;
-      
-      // Parse CRPS time series data (monthly) and convert to match regular format
-      const crpsTSMonthlyRaw = Papa.parse(crpsTSMonthlyCSV, { header: true, dynamicTyping: true }).data;
-      
-      // Convert CRPS monthly data to match timeseries format
-      const crpsTSMonthly = crpsTSMonthlyRaw.map(row => ({
-        model: row.model_name,
-        variable: row.variable_name,
-        metric: row.metric,
-        time: row.time,
-        global: row.global,
-        northern_hemisphere: row.northern_hemisphere,
-        southern_hemisphere: row.southern_hemisphere,
-        tropics: row.tropics
-      }));
-      
-      // Parse CRPS annual time series data and convert to timeseries format
-      const crpsTSAnnualRaw = Papa.parse(crpsTSAnnualCSV, { header: true, dynamicTyping: true }).data;
-      
-      // Convert CRPS annual data to match timeseries format
-      const crpsTSAnnual = crpsTSAnnualRaw.map(row => ({
-        model: row.model_name,
-        variable: row.variable_name,
-        metric: row.metric,
-        year: new Date(row.time).getFullYear(),
-        global: row.global,
-        northern_hemisphere: row.northern_hemisphere,
-        southern_hemisphere: row.southern_hemisphere,
-        tropics: row.tropics
-      }));
-      
-      // Remove duplicates from CRPS time series data
-      const crpsTSMonthlyMap = new Map();
-      crpsTSMonthly.forEach(row => {
-        const key = `${row.model}-${row.variable}-${row.time}-${row.metric}`;
-        if (!crpsTSMonthlyMap.has(key)) {
-          crpsTSMonthlyMap.set(key, row);
-        }
-      });
-      const deduplicatedCRPSTSMonthly = Array.from(crpsTSMonthlyMap.values());
-      
-      // Remove duplicates from CRPS annual time series data
-      const crpsTSAnnualMap = new Map();
-      crpsTSAnnual.forEach(row => {
-        const key = `${row.model}-${row.variable}-${row.year}-${row.metric}`;
-        if (!crpsTSAnnualMap.has(key)) {
-          crpsTSAnnualMap.set(key, row);
-        }
-      });
-      const deduplicatedCRPSTSAnnual = Array.from(crpsTSAnnualMap.values());
-      
-      // Combine regular and CRPS time series data for monthly
-      tsMonthly = [...tsMonthly, ...deduplicatedCRPSTSMonthly];
-      
-      // Combine regular and CRPS time series data for annual
-      tsAnnual = [...tsAnnual, ...deduplicatedCRPSTSAnnual];
       
       setupTimeSeries();
     })
@@ -337,34 +256,28 @@
     function setupTimeSeries() {
       const plotDiv = document.getElementById('time-series-plot');
 
+      // Map dropdown value to CSV metric value
+      const metricMap = {
+        "zonal_mean_mae": "MAE",
+        "zonal_mean_rmse": "RMSE",
+        "zonal_mean_crps": "CRPS",
+      };
+
       function updatePlot() {
         const varVal = document.getElementById('filter-variable').value;
         const regVal = document.getElementById('filter-region').value;
         const metVal = document.getElementById('filter-metric').value;
         const resolution = document.querySelector('input[name="ts-resolution"]:checked').value;
 
-        const metValChart = metVal === "zonal_mean_rmse"
-          ? "RMSE"
-          : metVal === "zonal_mean_mae"
-            ? "MAE"
-            : metVal === "zonal_mean_crps"
-              ? "CRPS"
-              : metVal === "zonal_mean_crps_bias_adjusted"
-                ? "CRPS (bias adjusted)"
-                : metVal === "zonal_mean_crps_anomaly"
-                  ? "CRPS (anomaly)"
-                  : NaN;
-
-        // Check if CRPS metric is selected
-        const isCRPS = isCRPSMetric(metVal);
+        // Use mapped metric value for filtering
+        const metValChart = metricMap[metVal] || metVal;
 
         const tsData = resolution === "monthly" ? tsMonthly : tsAnnual;
         const timeKey = resolution === "monthly" ? "time" : "year";
-        
-        // After conversion, all data uses the same column names
         const modelKey = "model";
         const variableKey = "variable";
-        
+
+        // Filter using mapped metric value
         const filtered = tsData.filter(d => 
           d[variableKey] === varVal && d.metric === metValChart
         );
@@ -383,16 +296,13 @@
         const title_var_map = { 'tas': 'surface air temperature (°C)', 'pr': 'precipitation (kg/m2s)', 'clt': 'cloud area fraction (%)', 'tos': 'sea surface temperature (°C)', 'od550aer': 'aerosol optical depth at 550nm' };
         const title_region_map = { 'global': 'global', 'northern_hemisphere': 'northern hemisphere', 'southern_hemisphere': 'southern hemisphere', 'tropics': 'tropical',};
       
-        const region = title_region_map[document.getElementById('filter-region').value];
+        const region = title_region_map[regVal];
         const variable_name = title_var_map[varVal];
 
         document.getElementById('timeseries-title').textContent = `${metValChart} of ${resolution} ${region} ${variable_name}`;
 
         const data = Object.values(traces);
         const layout = {
-          // title: `${metValChart} over ${resolution} time for ${varVal} (${regVal.replace('_', ' ')})`,
-          // xaxis: { title: resolution === "monthly" ? "Month" : "Year" },
-          // yaxis: { title: metValChart },
           legend: { orientation: 'h', x: 0, y: -0.1 }
         };
 
