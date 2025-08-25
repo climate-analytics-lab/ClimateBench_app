@@ -327,7 +327,7 @@
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
-    Plotly.d3.csv("data/images/paleo_data/annual_global_mean_obs.csv", function(err, obsRows) {
+    Plotly.d3.csv("data/paleo_data/annual_global_mean_obs.csv", function(err, obsRows) {
         if (err) return console.error("Error loading obs CSV:", err);
 
         const periodLabels = [
@@ -359,7 +359,7 @@
             }
         };
 
-        Plotly.d3.csv("data/images/paleo_data/annual_zonal_means.csv", function(err, modelRows) {
+        Plotly.d3.csv("data/paleo_data/annual_zonal_means.csv", function(err, modelRows) {
             if (err) return console.error("Error loading model CSV:", err);
 
             // Filter for global region only & Eocene 3x CO₂
@@ -411,7 +411,7 @@
         });
     });
 
-    Plotly.d3.csv("data/images/paleo_data/annual_zonal_means.csv", function(err, rows) {
+    Plotly.d3.csv("data/paleo_data/annual_zonal_means.csv", function(err, rows) {
         if (err) {
             console.error("Error loading CSV:", err);
             return;
@@ -490,7 +490,7 @@
         const chartId = sectionEl.querySelector('div[id$="plotly-chart"]').id;
 
         function updateMap() {
-            let imgPath = `data/images/paleo_data/${period}/${modelSelect.value}`;
+            let imgPath = `data/paleo_data/${period}/${modelSelect.value}`;
             if (hasCo2) imgPath += `_${co2Select.value}`;
             imgPath += `.png`;
             imgEl.src = imgPath;
@@ -498,7 +498,7 @@
         }
 
         function updatePlot() {
-            Plotly.d3.csv("data/images/paleo_data/monthly_zonal_means.csv", (err, rows) => {
+            Plotly.d3.csv("data/paleo_data/monthly_zonal_means.csv", (err, rows) => {
                 if (err) return console.error(err);
 
                 let filtered = rows.filter(r => 
