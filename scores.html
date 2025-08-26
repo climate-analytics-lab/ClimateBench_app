@@ -213,7 +213,7 @@
       renderTable(filtered);
     }
 
-    // Load both benchmark and CRPS data
+    // Load benchmark data
     Promise.all([
       fetch('data/benchmark_results.csv').then(res => res.text()),
     ])
@@ -223,7 +223,7 @@
       benchmarkData = benchmarkParsed.data.filter(row => row.model);
       
       // Set headers from benchmark data initially
-      headers = benchmarkParsed.meta.fields.slice(1); // skip unnamed index
+      headers = benchmarkParsed.meta.fields;
       allRows = benchmarkData; // default to benchmark data
 
       applyFilters(); // auto-filter on load with default dropdown values
