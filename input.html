@@ -33,6 +33,12 @@
   </style>
 </head>
 <body>
+  <!-- CAL Brand Bar -->
+  <div class="brandbar">
+    <img src="assets/cal-logo.svg" alt="CAL" />
+    <span class="brand-text">Climate Analytics Lab · UC San Diego</span>
+  </div>
+
   <header class="header">
     <div class="header-content">
       <h1 class="header-title">ClimateBench 2.0</h1>
@@ -111,6 +117,7 @@
           </div>
         </div>
       </div>
+
       <h2 class="section-title">Model and Observation Data</h2>
 
       <div class="chart-container">
@@ -177,7 +184,7 @@
       const model = document.getElementById('model-select').value;
       const variable = document.getElementById('variable-select').value;
       const resolution = document.querySelector('input[name="resolution"]:checked').value;
-      const rawDate = getDateFromSlider(slider.value); // could be "YYYY" or "YYYY-MM"
+      const rawDate = getDateFromSlider(slider.value);
 
       const date = resolution === 'annual'
         ? `${rawDate}-01-01`
@@ -196,7 +203,6 @@
       errorImg.src = errorPath;
       errorImg.alt = `Model error for ${model} on ${date}`;
 
-      // document.getElementById('map-title').textContent = `Map Image – ${date}`;
       document.getElementById('map-title').textContent = `${model} ${resolution} data and error for ${date}`;
     }
 
