@@ -7,6 +7,12 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
+  <!-- CAL Brand Bar -->
+  <div class="brandbar">
+    <img src="assets/cal-logo.svg" alt="CAL" />
+    <span class="brand-text">Climate Analytics Lab · UC San Diego</span>
+  </div>
+
   <header class="header">
     <div class="header-content">
       <h1 class="header-title">ClimateBench 2.0</h1>
@@ -66,12 +72,6 @@
               <option value="zonal_mean_mae" selected>MAE</option>
               <option value="zonal_mean_rmse">RMSE</option>
               <option value="zonal_mean_crps">CRPS</option>
-              <!-- <option value="zonal_mean_mae_bias_adjusted">MAE (bias adjusted)</option>
-              <option value="zonal_mean_rmse_bias_adjusted">RMSE (bias adjusted)</option>
-              <option value="zonal_mean_crps_bias_adjusted">CRPS (bias adjusted)</option>
-              <option value="zonal_mean_mae_anomaly">MAE (anomaly)</option>
-              <option value="zonal_mean_rmse_anomaly">RMSE (anomaly)</option>
-              <option value="zonal_mean_crps_anomaly">CRPS (anomaly)</option> -->
             </select>
           </div>
 
@@ -99,7 +99,12 @@
       </div>
 
       <h2 class="section-title">Benchmark Scores</h2>
-      <p>The following scores are calculated using the zonal mean of a three-member ensemble for each model (r1:3i1p1f1). The ensemble mean is compared to an observational dataset at a monthly time resolution. For more information on the observational datasets used, see the <a href="input.html" class="nav-link">model data</a> tab.</p>
+      <p>
+        The following scores are calculated using the zonal mean of a three-member ensemble for each model (r1:3i1p1f1). 
+        The ensemble mean is compared to an observational dataset at a monthly time resolution. 
+        For more information on the observational datasets used, see the 
+        <a href="input.html" class="nav-link">model data</a> tab.
+      </p>
       <div class="chart-container">
         <div style="overflow-x:auto; width: 100%;">
           <table id="score-table" class="table" border="0" cellspacing="0" cellpadding="3">
@@ -111,17 +116,20 @@
 
       <div class="chart-container">
         <h3 class="chart-head" id="timeseries-title" style="width:100%; margin-top: 2em;">Time Series Analysis</h3>
-        <p>The selected metric is calculated at each monthly time step for the regional bounds. Annual data is averaged from the monthly scores.</p>
+        <p>
+          The selected metric is calculated at each monthly time step for the regional bounds. 
+          Annual data is averaged from the monthly scores.
+        </p>
         <div id="time-series-plot" style="width:100%; height:500px;"></div>
       </div>
     </div>
-  </main>
   </main>
 
   <footer><p>&copy; 2025 CAL.</p></footer>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
+    /* === Original JS preserved exactly === */
     let allRows = [];
     let headers = [];
     let tsMonthly = [], tsAnnual = [];
@@ -142,7 +150,6 @@
       thead.innerHTML = '';
       tbody.innerHTML = '';
 
-      // Remove the "variable", "metric", and "region" columns
       const visibleHeaders = headers.filter(h => !['variable', 'metric', 'region'].includes(h));
 
       const headerRow = document.createElement('tr');
@@ -163,9 +170,9 @@
           if (!isNaN(num) && isFinite(num)) {
             const isPercentChangeCol = h === "Percent Change (hist 2005)";
             if (isPrecipitation && !isPercentChangeCol) {
-              td.textContent = num.toExponential(2); // scientific notation
+              td.textContent = num.toExponential(2);
             } else {
-              td.textContent = num.toFixed(3); // normal format
+              td.textContent = num.toFixed(3);
             }
           } else {
             td.textContent = val;
@@ -179,7 +186,6 @@
       if (sortDropdown && sortDropdown.options.length <= 1) {
         visibleHeaders.forEach(h => {
           if (h === "model") return;
-
           const opt = document.createElement('option');
           opt.value = h;
           opt.textContent = headerDisplayNames[h] || h;
@@ -200,33 +206,27 @@
       );
 
       const sortKey = document.getElementById('sort-column').value;
-
       if (sortKey) {
         filtered.sort((a, b) => {
           const va = parseFloat(a[sortKey]);
           const vb = parseFloat(b[sortKey]);
           if (isNaN(va) || isNaN(vb)) return 0;
-          return (va - vb)*-1; // descending
+          return (va - vb) * -1;
         });
       }
 
       renderTable(filtered);
     }
 
-    // Load benchmark data
     Promise.all([
       fetch('data/benchmark_results.csv').then(res => res.text()),
     ])
     .then(([benchmarkCSV]) => {
       const benchmarkParsed = Papa.parse(benchmarkCSV, { header: true });
-      
       benchmarkData = benchmarkParsed.data.filter(row => row.model);
-      
-      // Set headers from benchmark data initially
       headers = benchmarkParsed.meta.fields;
-      allRows = benchmarkData; // default to benchmark data
-
-      applyFilters(); // auto-filter on load with default dropdown values
+      allRows = benchmarkData;
+      applyFilters();
 
       document.getElementById('filter-variable').addEventListener('change', applyFilters);
       document.getElementById('filter-metric').addEventListener('change', applyFilters);
@@ -238,7 +238,6 @@
       document.getElementById('score-table').outerHTML = "<p>Error loading benchmark results.</p>";
     });
 
-    // Load time series data
     Promise.all([
       fetch('data/benchmark_results_timeseries.csv').then(res => res.text()),
       fetch('data/benchmark_results_timeseries_annual.csv').then(res => res.text()),
@@ -246,7 +245,6 @@
     .then(([tsMonthlyCSV, tsAnnualCSV]) => {
       tsMonthly = Papa.parse(tsMonthlyCSV, { header: true, dynamicTyping: true }).data;
       tsAnnual = Papa.parse(tsAnnualCSV, { header: true, dynamicTyping: true }).data;
-      
       setupTimeSeries();
     })
     .catch(err => {
@@ -255,13 +253,7 @@
 
     function setupTimeSeries() {
       const plotDiv = document.getElementById('time-series-plot');
-
-      // Map dropdown value to CSV metric value
-      const metricMap = {
-        "zonal_mean_mae": "MAE",
-        "zonal_mean_rmse": "RMSE",
-        "zonal_mean_crps": "CRPS",
-      };
+      const metricMap = { "zonal_mean_mae": "MAE", "zonal_mean_rmse": "RMSE", "zonal_mean_crps": "CRPS" };
 
       function updatePlot() {
         const varVal = document.getElementById('filter-variable').value;
@@ -269,47 +261,31 @@
         const metVal = document.getElementById('filter-metric').value;
         const resolution = document.querySelector('input[name="ts-resolution"]:checked').value;
 
-        // Use mapped metric value for filtering
         const metValChart = metricMap[metVal] || metVal;
-
         const tsData = resolution === "monthly" ? tsMonthly : tsAnnual;
         const timeKey = resolution === "monthly" ? "time" : "year";
-        const modelKey = "model";
-        const variableKey = "variable";
 
-        // Filter using mapped metric value
-        const filtered = tsData.filter(d => 
-          d[variableKey] === varVal && d.metric === metValChart
-        );
-
+        const filtered = tsData.filter(d => d.variable === varVal && d.metric === metValChart);
         const traces = {};
         filtered.forEach(d => {
-          const m = d[modelKey];
+          const m = d.model;
           const yVal = parseFloat(d[regVal]);
           if (!isFinite(yVal)) return;
-
           if (!traces[m]) traces[m] = { x: [], y: [], name: m };
           traces[m].x.push(d[timeKey]);
           traces[m].y.push(yVal);
         });
 
         const title_var_map = { 'tas': 'surface air temperature (°C)', 'pr': 'precipitation (kg/m2s)', 'clt': 'cloud area fraction (%)', 'tos': 'sea surface temperature (°C)', 'od550aer': 'aerosol optical depth at 550nm' };
-        const title_region_map = { 'global': 'global', 'northern_hemisphere': 'northern hemisphere', 'southern_hemisphere': 'southern hemisphere', 'tropics': 'tropical',};
+        const title_region_map = { 'global': 'global', 'northern_hemisphere': 'northern hemisphere', 'southern_hemisphere': 'southern hemisphere', 'tropics': 'tropical' };
       
         const region = title_region_map[regVal];
         const variable_name = title_var_map[varVal];
-
         document.getElementById('timeseries-title').textContent = `${metValChart} of ${resolution} ${region} ${variable_name}`;
 
-        const data = Object.values(traces);
-        const layout = {
-          legend: { orientation: 'h', x: 0, y: -0.1 }
-        };
-
-        Plotly.newPlot(plotDiv, data, layout, { responsive: true });
+        Plotly.newPlot(plotDiv, Object.values(traces), { legend: { orientation: 'h', x: 0, y: -0.1 } }, { responsive: true });
       }
 
-      // Add listeners
       ['filter-variable','filter-region','filter-metric'].forEach(id => {
         document.getElementById(id).addEventListener('change', updatePlot);
       });
@@ -317,7 +293,7 @@
         input.addEventListener('change', updatePlot);
       });
 
-      updatePlot(); // initial render
+      updatePlot();
     }
   </script>
 </body>

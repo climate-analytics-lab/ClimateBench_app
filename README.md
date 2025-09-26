@@ -1,4 +1,4 @@
-# ClimateBench 2.0 Web App
+## ClimateBench 2.0 Web App
 Frontend application for exploring results from ClimateBench 2.0
 
 Live app: [https://climate-analytics-lab.github.io/ClimateBench_app/index.html](https://climate-analytics-lab.github.io/ClimateBench_app/index.html)

@@ -2,72 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ClimateBench 2.0 - Overview</title>
+  <title>ClimateBench 2.0</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- CAL Brand Bar -->
+  <div class="brandbar">
+    <img src="assets/cal-logo.svg" alt="CAL" />
+    <span class="brand-text">Climate Analytics Lab · UC San Diego</span>
+  </div>
+
   <header class="header">
     <div class="header-content">
       <h1 class="header-title">ClimateBench 2.0</h1>
-      <p class="header-subtitle">Climate Model Benchmarking & Analysis Platform</p>
+      <p class="header-subtitle">Climate Model Benchmarking &amp; Analysis Platform</p>
     </div>
   </header>
 
   <nav class="navigation">
     <div class="nav-container">
       <ul class="nav-list">
-        <li class="nav-item">
-          <a href="index.html" class="nav-link active">Overview</a>
-        </li>
-        <li class="nav-item">
-          <a href="scores.html" class="nav-link">Scores</a>
-        </li>
-        <li class="nav-item">
-          <a href="paleo.html" class="nav-link">Paleoclimate</a>
-        </li>
-        <li class="nav-item">
-          <a href="input.html" class="nav-link">Model Data</a>
-        </li>
+        <li><a href="index.html" class="nav-link active">Overview</a></li>
+        <li><a href="scores.html" class="nav-link">Scores</a></li>
+        <li><a href="paleo.html" class="nav-link">Paleoclimate</a></li>
+        <li><a href="input.html" class="nav-link">Model Data</a></li>
       </ul>
     </div>
   </nav>
 
   <main class="main-content">
-    <div class="overview-section">
-      
-      <h2 class="section-title">ClimateBench2.0: Probabilistic Climate Model Scoring</h2>
-      <div style="width:100%; display:inline-block;">
-        <div style="width:75%; display:inline-block; margin-right: 50px;">
-          <!-- <h1>Abstract</h1> -->
-          <!-- <p>ClimateBench is a benchmark dataset for climate model emulation inspired by <a href="https://sites.research.google/gr/weatherbench/">WeatherBench</a>. The following results are calculated using a three member ensemble (r1i1p1f1, r2i1p1f1, r3i1p1f1) of the historical and SSP2-4.5 simulations from CMIP6 models. The model data is benchmarked against observational datasets to test how accurate their predicitons are of the last ten years.</p> -->
-          <p>Despite their central role in climate science and policy, Earth system models (ESMs) remain difficult to compare in any rigorous or transparent way. Most existing evaluations either emphasize specific processes or rely on qualitative assessments across diverse metrics, making it nearly impossible to rank models by their predictive skill. ClimateBench2.0 introduces a probabilistic scoring framework that focuses instead on what matters most: a model’s ability to accurately simulate the historical climate and project future multi-decadal change.</p>
-          <p>The benchmark leverages high-quality observations from the satellite era (1980–present), with a particular focus on present-day metrics such as top-of-atmosphere (TOA) energy balance, seasonal cycle fidelity, and variability in clouds, aerosols, precipitation, and ocean heat uptake for which observational constraints are strongest. Paleoclimate reconstructions (LGM, LIG, Mid-Holocene) are incorporated as out-of-distribution tests to evaluate models beyond the narrow window of recent data. Scoring is based on robust probabilistic metrics such as CRPS and Brier scores, designed to assess ensemble skill and uncertainty quantification.</p>
-          <p>Crucially, statistical performance alone is not sufficient. ClimateBench2.0 will also introduce a dedicated Physical Consistency category, evaluating properties such as global energy balance closure, conservation of water and carbon, and realistic land-ocean-atmosphere energy exchanges. These physical integrity checks are essential for trusting a model’s out-of-distribution predictions - especially under strong forcings not seen in the historical record.</p>
-          <p>By combining empirical benchmarks with physically grounded constraints, ClimateBench2.0 transforms evaluation into a reproducible, quantitative, and outcome-driven ranking framework. It applies across model types, from physical to hybrid to ML-based, and integrates with existing efforts (e.g., CMIP, Obs4MIPs) to ensure transparency and broad adoption. </p>
-        </div>
-        <div style="width:20%; display:inline-block;vertical-align:top;">
-          <h1>Quick Links</h1>
-          <h3><a href="https://doi.org/10.1029/2021MS002954" class="nav-link">ClimateBench1.0 Paper</a></h3>
-          <h3><a href="https://climate-analytics-lab.github.io/" class="nav-link">Climate Analytics Lab</a></h3>
-          <h3><a href="https://github.com/climate-analytics-lab/ClimateBench2/tree/main" class="nav-link">Code</a></h3>
-          <h3><a href="https://console.cloud.google.com/storage/browser/climatebench" class="nav-link">Data</a></h3>
-        </div>
-      </div>
-      
-      
-      <h2 class="section-title">Headline Scorecard</h2>
-      <p>The scorecard shows the comparison of climate model skill for a ten-year historical period (2005-2014) vs a ten-year projected period (2015-2024) from the SSP2-4.5 simulation. Skill is measured by root mean squared error (RMSE) of monthly model data from observations. The scorecard is colored based on the RMSE departure from the median skill for each variable, with the RMSE value shown as the number in each box.</p>
-      <div class="chart-container">
-        <div id="imageHolder">
-          <img src="data/images/deterministic_upper.png" alt="overview_fig" style="width:100%; max-width:1000px; height:600px; margin:2em auto;"/>
-        </div>
-      </div>
+    <h2 class="section-title">ClimateBench2.0: Probabilistic Climate Model Scoring</h2>
 
-      <h2 class="section-title">Acknowledgements</h2>
-      <p>Support for this project comes from Google Research.</p>
+    <p>
+      Despite their central role in climate science and policy, Earth system models (ESMs) remain difficult to compare in any rigorous or transparent way. 
+      Most existing evaluations either emphasize specific processes or rely on qualitative assessments across diverse metrics, 
+      making it nearly impossible to rank models by their predictive skill. 
+      ClimateBench2.0 introduces a probabilistic scoring framework that focuses instead on what matters most: 
+      a model’s ability to accurately simulate the historical climate and project future multi-decadal change.
+    </p>
+
+    <p>
+      The benchmark leverages high-quality observations from the satellite era (1980–present), 
+      with a particular focus on present-day metrics such as top-of-atmosphere (TOA) energy balance, 
+      seasonal cycle fidelity, and variability in clouds, aerosols, precipitation, and ocean heat uptake for which observational constraints are strongest. 
+      Paleoclimate reconstructions (LGM, LIG, Mid-Holocene) are incorporated as out-of-distribution tests to evaluate models beyond the narrow window of recent data. 
+      Scoring is based on robust probabilistic metrics such as CRPS and Brier scores, designed to assess ensemble skill and uncertainty quantification.
+    </p>
+
+    <p>
+      Crucially, statistical performance alone is not sufficient. ClimateBench2.0 will also introduce a dedicated Physical Consistency category, 
+      evaluating properties such as global energy balance closure, conservation of water and carbon, and realistic land-ocean-atmosphere energy exchanges. 
+      These physical integrity checks are essential for trusting a model’s out-of-distribution predictions — 
+      especially under strong forcings not seen in the historical record.
+    </p>
+
+    <p>
+      By combining empirical benchmarks with physically grounded constraints, ClimateBench2.0 transforms evaluation into a reproducible, 
+      quantitative, and outcome-driven ranking framework. It applies across model types, from physical to hybrid to ML-based, 
+      and integrates with existing efforts (e.g., CMIP, Obs4MIPs) to ensure transparency and broad adoption.
+    </p>
+
+    <h2 class="section-title">Quick Links</h2>
+    <div class="quick-links">
+      <a class="quick-link" href="https://doi.org/10.1029/2021MS002954" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6"/>
+          <path d="M16 13H8M16 17H8"/>
+        </svg>
+        <span>ClimateBench1.0 Paper</span>
+      </a>
+
+      <a class="quick-link" href="https://climate-analytics-lab.github.io/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2h12"/>
+          <path d="M14 2v6.5l5.16 8.6A2 2 0 0 1 17.42 20H6.58a2 2 0 0 1-1.74-2.9L10 8.5V2"/>
+        </svg>
+        <span>Climate Analytics Lab</span>
+      </a>
+
+      <a class="quick-link" href="https://github.com/climate-analytics-lab/ClimateBench2/tree/main" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 18l6-6-6-6"/>
+          <path d="M8 6l-6 6 6 6"/>
+        </svg>
+        <span>Code</span>
+      </a>
+
+      <a class="quick-link" href="https://console.cloud.google.com/storage/browser/climatebench" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/>
+          <path d="M21 5v6c0 1.66-4.03 3-9 3s-9-1.34-9-3V5"/>
+          <path d="M21 11v6c0 1.66-4.03 3-9 3s-9-1.34-9-3v-6"/>
+        </svg>
+        <span>Data</span>
+      </a>
     </div>
-  </main>
 
-  <footer><p>&copy; 2025 CAL.</p></footer>
+    <h2 class="section-title">Headline Scorecard</h2>
+    <p>The scorecard shows the comparison of climate model skill for a ten-year historical period (2005-2014) vs a ten-year projected period (2015-2024) from the SSP2-4.5 simulation. Skill is measured by root mean squared error (RMSE) of monthly model data from observations. The scorecard is colored based on the RMSE departure from the median skill for each variable, with the RMSE value shown as the number in each box.</p>
+    <div class="chart-container">
+      <div id="imageHolder">
+        <img src="data/images/deterministic_upper.png" alt="overview_fig" style="width:100%; max-width:1000px; height:600px; margin:2em auto;"/>
+      </div>
+    </div>
+
+    <h2 class="section-title">Acknowledgements</h2>
+    <p>Support for this project comes from Google Research.</p>
+  </div>
+</main>
+
+<footer><p>&copy; 2025 CAL.</p></footer>
 </body>
 </html>
